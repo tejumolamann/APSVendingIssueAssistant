@@ -44,6 +44,13 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonClearCredentials = new javax.swing.JButton();
         jButtonCancelSave = new javax.swing.JButton();
         jButtonSave = new javax.swing.JButton();
+        jDialogDemoLive = new javax.swing.JDialog();
+        jPanelDemoLive = new javax.swing.JPanel();
+        jRadioButtonLive = new javax.swing.JRadioButton();
+        jRadioButtonDemo = new javax.swing.JRadioButton();
+        jButtonCancelDemoLive = new javax.swing.JButton();
+        jButtonSaveDemoLive1 = new javax.swing.JButton();
+        buttonGroupDemoLive = new javax.swing.ButtonGroup();
         jPanelControls = new javax.swing.JPanel();
         jButtonValidate = new javax.swing.JButton();
         jButtonPreviewVend = new javax.swing.JButton();
@@ -59,6 +66,7 @@ public class APSPanel extends javax.swing.JFrame {
         exitMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         credentialsMenuItem = new javax.swing.JMenuItem();
+        jMenuItemDemoLive = new javax.swing.JMenuItem();
 
         jDialogMeterNumber.setTitle("Validate meter number");
 
@@ -203,6 +211,77 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jDialogDemoLive.setTitle("Demo/Live Vending");
+        jDialogDemoLive.setAlwaysOnTop(true);
+        jDialogDemoLive.setModal(true);
+        jDialogDemoLive.setResizable(false);
+        jDialogDemoLive.setSize(new java.awt.Dimension(400, 175));
+        jDialogDemoLive.setLocationRelativeTo(null);
+
+        jPanelDemoLive.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        buttonGroupDemoLive.add(jRadioButtonLive);
+        jRadioButtonLive.setText("Live Vend");
+        jRadioButtonLive.setToolTipText("Select for live vending");
+
+        buttonGroupDemoLive.add(jRadioButtonDemo);
+        jRadioButtonDemo.setText("Demo Vend");
+        jRadioButtonDemo.setToolTipText("Select for demo or none live vending");
+
+        jButtonCancelDemoLive.setText("Cancel");
+
+        jButtonSaveDemoLive1.setText("Save");
+
+        javax.swing.GroupLayout jPanelDemoLiveLayout = new javax.swing.GroupLayout(jPanelDemoLive);
+        jPanelDemoLive.setLayout(jPanelDemoLiveLayout);
+        jPanelDemoLiveLayout.setHorizontalGroup(
+            jPanelDemoLiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelDemoLiveLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelDemoLiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelDemoLiveLayout.createSequentialGroup()
+                        .addGroup(jPanelDemoLiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jRadioButtonLive)
+                            .addComponent(jRadioButtonDemo))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelDemoLiveLayout.createSequentialGroup()
+                        .addGap(0, 230, Short.MAX_VALUE)
+                        .addComponent(jButtonSaveDemoLive1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButtonCancelDemoLive)))
+                .addContainerGap())
+        );
+        jPanelDemoLiveLayout.setVerticalGroup(
+            jPanelDemoLiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelDemoLiveLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jRadioButtonLive)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jRadioButtonDemo)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelDemoLiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonCancelDemoLive)
+                    .addComponent(jButtonSaveDemoLive1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jDialogDemoLiveLayout = new javax.swing.GroupLayout(jDialogDemoLive.getContentPane());
+        jDialogDemoLive.getContentPane().setLayout(jDialogDemoLiveLayout);
+        jDialogDemoLiveLayout.setHorizontalGroup(
+            jDialogDemoLiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogDemoLiveLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelDemoLive, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jDialogDemoLiveLayout.setVerticalGroup(
+            jDialogDemoLiveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogDemoLiveLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelDemoLive, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Access Power Systems Vending Issue Assistant");
         setAlwaysOnTop(true);
@@ -299,6 +378,15 @@ public class APSPanel extends javax.swing.JFrame {
         });
         jMenu2.add(credentialsMenuItem);
 
+        jMenuItemDemoLive.setText("Demo or Live...");
+        jMenuItemDemoLive.setToolTipText("Click to switch vending between Live and Demo");
+        jMenuItemDemoLive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemDemoLiveActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItemDemoLive);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -325,6 +413,10 @@ public class APSPanel extends javax.swing.JFrame {
     private void credentialsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_credentialsMenuItemActionPerformed
         jDialogCredentials.setVisible(true);
     }//GEN-LAST:event_credentialsMenuItemActionPerformed
+
+    private void jMenuItemDemoLiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDemoLiveActionPerformed
+        jDialogDemoLive.setVisible(true);
+    }//GEN-LAST:event_jMenuItemDemoLiveActionPerformed
 
     /**
      * @param args the command line arguments
@@ -362,18 +454,22 @@ public class APSPanel extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroupDemoLive;
     private javax.swing.JMenuItem credentialsMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonCancelDemoLive;
     private javax.swing.JButton jButtonCancelSave;
     private javax.swing.JButton jButtonClearCredentials;
     private javax.swing.JButton jButtonGetBalance;
     private javax.swing.JButton jButtonPreviewVend;
     private javax.swing.JButton jButtonSave;
+    private javax.swing.JButton jButtonSaveDemoLive1;
     private javax.swing.JButton jButtonValidate;
     private javax.swing.JButton jButtonVend;
     private javax.swing.JDialog jDialogCredentials;
+    private javax.swing.JDialog jDialogDemoLive;
     private javax.swing.JDialog jDialogMeterNumber;
     private javax.swing.JLabel jLabelAuthCode;
     private javax.swing.JLabel jLabelPassword;
@@ -381,11 +477,15 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItemDemoLive;
     private javax.swing.JOptionPane jOptionPaneMeterNumber;
     private javax.swing.JPanel jPanelControls;
     private javax.swing.JPanel jPanelCredentials;
     private javax.swing.JPanel jPanelCredentials2;
+    private javax.swing.JPanel jPanelDemoLive;
     private javax.swing.JPanel jPanelDisplay;
+    private javax.swing.JRadioButton jRadioButtonDemo;
+    private javax.swing.JRadioButton jRadioButtonLive;
     private javax.swing.JScrollPane jScrollPaneDisplayValues;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
