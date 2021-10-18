@@ -28,7 +28,12 @@ public class APSPanel extends javax.swing.JFrame {
     private void initComponents() {
 
         jDialogMeterNumber = new javax.swing.JDialog();
-        jOptionPaneMeterNumber = new javax.swing.JOptionPane();
+        jPanelValidateMeterNum = new javax.swing.JPanel();
+        jLabelValidateMeterNum = new javax.swing.JLabel();
+        jTextFieldValidateMeterNum = new javax.swing.JTextField();
+        jButtonClearMeterNum = new javax.swing.JButton();
+        jButtonCancelValidateMeterNum = new javax.swing.JButton();
+        jButtonValidateMeterNum = new javax.swing.JButton();
         jDialogCredentials = new javax.swing.JDialog();
         jDialogCredentials.setLocationRelativeTo(null);
         jPanelCredentials = new javax.swing.JPanel();
@@ -68,30 +73,93 @@ public class APSPanel extends javax.swing.JFrame {
         credentialsMenuItem = new javax.swing.JMenuItem();
         jMenuItemDemoLive = new javax.swing.JMenuItem();
 
-        jDialogMeterNumber.setTitle("Validate meter number");
+        jDialogMeterNumber.setTitle("Validate Meter Number");
+        jDialogMeterNumber.setAlwaysOnTop(true);
+        jDialogMeterNumber.setModal(true);
+        jDialogMeterNumber.setResizable(false);
+        jDialogMeterNumber.setSize(new java.awt.Dimension(400, 170));
+        jDialogMeterNumber.setLocationRelativeTo(null);
 
-        jOptionPaneMeterNumber.setMessage("Enter meter number");
-        jOptionPaneMeterNumber.setWantsInput(true);
+        jPanelValidateMeterNum.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabelValidateMeterNum.setText("Enter a meter number");
+
+        jTextFieldValidateMeterNum.setToolTipText("Type in a meter number to validate it");
+        jTextFieldValidateMeterNum.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldValidateMeterNumKeyTyped(evt);
+            }
+        });
+
+        jButtonClearMeterNum.setText("Clear");
+        jButtonClearMeterNum.setToolTipText("Clear field");
+        jButtonClearMeterNum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonClearMeterNumActionPerformed(evt);
+            }
+        });
+
+        jButtonCancelValidateMeterNum.setText("Cancel");
+        jButtonCancelValidateMeterNum.setToolTipText("Cancel");
+        jButtonCancelValidateMeterNum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelValidateMeterNumActionPerformed(evt);
+            }
+        });
+
+        jButtonValidateMeterNum.setText("Validate");
+        jButtonValidateMeterNum.setToolTipText("Click to validate meter number");
+        jButtonValidateMeterNum.setEnabled(false);
+
+        javax.swing.GroupLayout jPanelValidateMeterNumLayout = new javax.swing.GroupLayout(jPanelValidateMeterNum);
+        jPanelValidateMeterNum.setLayout(jPanelValidateMeterNumLayout);
+        jPanelValidateMeterNumLayout.setHorizontalGroup(
+            jPanelValidateMeterNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelValidateMeterNumLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelValidateMeterNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextFieldValidateMeterNum)
+                    .addGroup(jPanelValidateMeterNumLayout.createSequentialGroup()
+                        .addComponent(jLabelValidateMeterNum)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanelValidateMeterNumLayout.createSequentialGroup()
+                        .addComponent(jButtonClearMeterNum)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 141, Short.MAX_VALUE)
+                        .addComponent(jButtonValidateMeterNum)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonCancelValidateMeterNum)))
+                .addContainerGap())
+        );
+        jPanelValidateMeterNumLayout.setVerticalGroup(
+            jPanelValidateMeterNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelValidateMeterNumLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelValidateMeterNum)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldValidateMeterNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelValidateMeterNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonClearMeterNum)
+                    .addComponent(jButtonCancelValidateMeterNum)
+                    .addComponent(jButtonValidateMeterNum))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout jDialogMeterNumberLayout = new javax.swing.GroupLayout(jDialogMeterNumber.getContentPane());
         jDialogMeterNumber.getContentPane().setLayout(jDialogMeterNumberLayout);
         jDialogMeterNumberLayout.setHorizontalGroup(
             jDialogMeterNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-            .addGroup(jDialogMeterNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jDialogMeterNumberLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jOptionPaneMeterNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(jDialogMeterNumberLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelValidateMeterNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jDialogMeterNumberLayout.setVerticalGroup(
             jDialogMeterNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-            .addGroup(jDialogMeterNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jDialogMeterNumberLayout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
-                    .addComponent(jOptionPaneMeterNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(jDialogMeterNumberLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelValidateMeterNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jDialogCredentials.setTitle("Credentials");
@@ -229,6 +297,11 @@ public class APSPanel extends javax.swing.JFrame {
         jRadioButtonDemo.setToolTipText("Select for demo or none live vending");
 
         jButtonCancelDemoLive.setText("Cancel");
+        jButtonCancelDemoLive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelDemoLiveActionPerformed(evt);
+            }
+        });
 
         jButtonSaveDemoLive1.setText("Save");
 
@@ -290,6 +363,11 @@ public class APSPanel extends javax.swing.JFrame {
 
         jButtonValidate.setText("Validate");
         jButtonValidate.setToolTipText("Validate Meter Number");
+        jButtonValidate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonValidateActionPerformed(evt);
+            }
+        });
 
         jButtonPreviewVend.setText("<html><p align='center'>Preview Vend/</p>Generate Transaction Reference");
         jButtonPreviewVend.setToolTipText("Preview a vend before actual vend");
@@ -418,6 +496,33 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogDemoLive.setVisible(true);
     }//GEN-LAST:event_jMenuItemDemoLiveActionPerformed
 
+    private void jButtonCancelDemoLiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelDemoLiveActionPerformed
+        jDialogDemoLive.setVisible(false);
+    }//GEN-LAST:event_jButtonCancelDemoLiveActionPerformed
+
+    private void jButtonValidateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValidateActionPerformed
+        jDialogMeterNumber.setVisible(true);
+    }//GEN-LAST:event_jButtonValidateActionPerformed
+
+    private void jTextFieldValidateMeterNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldValidateMeterNumKeyTyped
+        if(evt.getComponent().equals(jTextFieldValidateMeterNum)){
+            if(!jTextFieldValidateMeterNum.getText().isEmpty()){
+                jButtonValidateMeterNum.setEnabled(true);
+            } else{
+                jButtonValidateMeterNum.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_jTextFieldValidateMeterNumKeyTyped
+
+    private void jButtonClearMeterNumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearMeterNumActionPerformed
+        jTextFieldValidateMeterNum.setText("");
+        jButtonValidateMeterNum.setEnabled(false);
+    }//GEN-LAST:event_jButtonClearMeterNumActionPerformed
+
+    private void jButtonCancelValidateMeterNumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelValidateMeterNumActionPerformed
+        jDialogMeterNumber.setVisible(false);
+    }//GEN-LAST:event_jButtonCancelValidateMeterNumActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -461,12 +566,15 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonCancelDemoLive;
     private javax.swing.JButton jButtonCancelSave;
+    private javax.swing.JButton jButtonCancelValidateMeterNum;
     private javax.swing.JButton jButtonClearCredentials;
+    private javax.swing.JButton jButtonClearMeterNum;
     private javax.swing.JButton jButtonGetBalance;
     private javax.swing.JButton jButtonPreviewVend;
     private javax.swing.JButton jButtonSave;
     private javax.swing.JButton jButtonSaveDemoLive1;
     private javax.swing.JButton jButtonValidate;
+    private javax.swing.JButton jButtonValidateMeterNum;
     private javax.swing.JButton jButtonVend;
     private javax.swing.JDialog jDialogCredentials;
     private javax.swing.JDialog jDialogDemoLive;
@@ -474,16 +582,17 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelAuthCode;
     private javax.swing.JLabel jLabelPassword;
     private javax.swing.JLabel jLabelUsername;
+    private javax.swing.JLabel jLabelValidateMeterNum;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItemDemoLive;
-    private javax.swing.JOptionPane jOptionPaneMeterNumber;
     private javax.swing.JPanel jPanelControls;
     private javax.swing.JPanel jPanelCredentials;
     private javax.swing.JPanel jPanelCredentials2;
     private javax.swing.JPanel jPanelDemoLive;
     private javax.swing.JPanel jPanelDisplay;
+    private javax.swing.JPanel jPanelValidateMeterNum;
     private javax.swing.JRadioButton jRadioButtonDemo;
     private javax.swing.JRadioButton jRadioButtonLive;
     private javax.swing.JScrollPane jScrollPaneDisplayValues;
@@ -493,5 +602,6 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldAuthCode;
     private javax.swing.JTextField jTextFieldPassword;
     private javax.swing.JTextField jTextFieldUsername;
+    private javax.swing.JTextField jTextFieldValidateMeterNum;
     // End of variables declaration//GEN-END:variables
 }
