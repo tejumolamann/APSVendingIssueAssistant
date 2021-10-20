@@ -56,6 +56,17 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonCancelDemoLive = new javax.swing.JButton();
         jButtonSaveDemoLive1 = new javax.swing.JButton();
         buttonGroupDemoLive = new javax.swing.ButtonGroup();
+        jDialogPreviewVend = new javax.swing.JDialog();
+        jPanelValidateMeterNum1 = new javax.swing.JPanel();
+        jLabelPreviewMeterNum = new javax.swing.JLabel();
+        jTextFieldPreviewMeterNum = new javax.swing.JTextField();
+        jButtonClearPreview = new javax.swing.JButton();
+        jButtonCancelPreview = new javax.swing.JButton();
+        jButtonGenerate = new javax.swing.JButton();
+        jLabelPreviewAmount = new javax.swing.JLabel();
+        jTextFieldPreviewAmount = new javax.swing.JTextField();
+        jLabelPreviewPhoneNum = new javax.swing.JLabel();
+        jTextFieldPreviewPhoneNum = new javax.swing.JTextField();
         jPanelControls = new javax.swing.JPanel();
         jButtonValidate = new javax.swing.JButton();
         jButtonPreviewVend = new javax.swing.JButton();
@@ -229,8 +240,18 @@ public class APSPanel extends javax.swing.JFrame {
         jPanelCredentials2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jButtonClearCredentials.setText("Clear form");
+        jButtonClearCredentials.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonClearCredentialsActionPerformed(evt);
+            }
+        });
 
         jButtonCancelSave.setText("Cancel");
+        jButtonCancelSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelSaveActionPerformed(evt);
+            }
+        });
 
         jButtonSave.setText("Save");
 
@@ -355,6 +376,110 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jDialogPreviewVend.setTitle("Preview Vend/Transaction Reference");
+        jDialogPreviewVend.setAlwaysOnTop(true);
+        jDialogPreviewVend.setModal(true);
+        jDialogPreviewVend.setResizable(false);
+        jDialogPreviewVend.setSize(new java.awt.Dimension(400, 280));
+        jDialogPreviewVend.setLocationRelativeTo(null);
+
+        jPanelValidateMeterNum1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabelPreviewMeterNum.setText("Enter a meter number");
+
+        jTextFieldPreviewMeterNum.setToolTipText("Type in a meter number");
+
+        jButtonClearPreview.setText("Clear");
+        jButtonClearPreview.setToolTipText("Clear field");
+        jButtonClearPreview.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonClearPreviewActionPerformed(evt);
+            }
+        });
+
+        jButtonCancelPreview.setText("Cancel");
+        jButtonCancelPreview.setToolTipText("Cancel");
+        jButtonCancelPreview.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelPreviewActionPerformed(evt);
+            }
+        });
+
+        jButtonGenerate.setText("Generate");
+        jButtonGenerate.setToolTipText("Click to validate meter number");
+
+        jLabelPreviewAmount.setText("Enter topup amount");
+
+        jTextFieldPreviewAmount.setToolTipText("Enter an amount");
+
+        jLabelPreviewPhoneNum.setText("Enter phone number");
+
+        jTextFieldPreviewPhoneNum.setToolTipText("Type in a phone number");
+
+        javax.swing.GroupLayout jPanelValidateMeterNum1Layout = new javax.swing.GroupLayout(jPanelValidateMeterNum1);
+        jPanelValidateMeterNum1.setLayout(jPanelValidateMeterNum1Layout);
+        jPanelValidateMeterNum1Layout.setHorizontalGroup(
+            jPanelValidateMeterNum1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelValidateMeterNum1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelValidateMeterNum1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextFieldPreviewMeterNum)
+                    .addGroup(jPanelValidateMeterNum1Layout.createSequentialGroup()
+                        .addComponent(jButtonClearPreview)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 137, Short.MAX_VALUE)
+                        .addComponent(jButtonGenerate)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonCancelPreview))
+                    .addComponent(jTextFieldPreviewAmount)
+                    .addGroup(jPanelValidateMeterNum1Layout.createSequentialGroup()
+                        .addGroup(jPanelValidateMeterNum1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelPreviewMeterNum)
+                            .addComponent(jLabelPreviewAmount)
+                            .addComponent(jLabelPreviewPhoneNum))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jTextFieldPreviewPhoneNum))
+                .addContainerGap())
+        );
+        jPanelValidateMeterNum1Layout.setVerticalGroup(
+            jPanelValidateMeterNum1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelValidateMeterNum1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelPreviewMeterNum)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldPreviewMeterNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelPreviewAmount)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldPreviewAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelPreviewPhoneNum)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldPreviewPhoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelValidateMeterNum1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonClearPreview)
+                    .addComponent(jButtonCancelPreview)
+                    .addComponent(jButtonGenerate))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jDialogPreviewVendLayout = new javax.swing.GroupLayout(jDialogPreviewVend.getContentPane());
+        jDialogPreviewVend.getContentPane().setLayout(jDialogPreviewVendLayout);
+        jDialogPreviewVendLayout.setHorizontalGroup(
+            jDialogPreviewVendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogPreviewVendLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelValidateMeterNum1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jDialogPreviewVendLayout.setVerticalGroup(
+            jDialogPreviewVendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogPreviewVendLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelValidateMeterNum1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Access Power Systems Vending Issue Assistant");
         setAlwaysOnTop(true);
@@ -371,6 +496,11 @@ public class APSPanel extends javax.swing.JFrame {
 
         jButtonPreviewVend.setText("<html><p align='center'>Preview Vend/</p>Generate Transaction Reference");
         jButtonPreviewVend.setToolTipText("Preview a vend before actual vend");
+        jButtonPreviewVend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonPreviewVendActionPerformed(evt);
+            }
+        });
 
         jButtonVend.setText("Vend Meter Number");
         jButtonVend.setToolTipText("Vend for a meter number");
@@ -523,6 +653,30 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogMeterNumber.setVisible(false);
     }//GEN-LAST:event_jButtonCancelValidateMeterNumActionPerformed
 
+    private void jButtonCancelSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelSaveActionPerformed
+        jDialogCredentials.setVisible(false);
+    }//GEN-LAST:event_jButtonCancelSaveActionPerformed
+
+    private void jButtonClearCredentialsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearCredentialsActionPerformed
+        jTextFieldUsername.setText("");
+        jTextFieldPassword.setText("");
+        jTextFieldAuthCode.setText("");
+    }//GEN-LAST:event_jButtonClearCredentialsActionPerformed
+
+    private void jButtonClearPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearPreviewActionPerformed
+        jTextFieldPreviewMeterNum.setText("");
+        jTextFieldPreviewAmount.setText("");
+        jTextFieldPreviewPhoneNum.setText("");
+    }//GEN-LAST:event_jButtonClearPreviewActionPerformed
+
+    private void jButtonCancelPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelPreviewActionPerformed
+        jDialogPreviewVend.setVisible(false);
+    }//GEN-LAST:event_jButtonCancelPreviewActionPerformed
+
+    private void jButtonPreviewVendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPreviewVendActionPerformed
+        jDialogPreviewVend.setVisible(true);
+    }//GEN-LAST:event_jButtonPreviewVendActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -565,10 +719,13 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonCancelDemoLive;
+    private javax.swing.JButton jButtonCancelPreview;
     private javax.swing.JButton jButtonCancelSave;
     private javax.swing.JButton jButtonCancelValidateMeterNum;
     private javax.swing.JButton jButtonClearCredentials;
     private javax.swing.JButton jButtonClearMeterNum;
+    private javax.swing.JButton jButtonClearPreview;
+    private javax.swing.JButton jButtonGenerate;
     private javax.swing.JButton jButtonGetBalance;
     private javax.swing.JButton jButtonPreviewVend;
     private javax.swing.JButton jButtonSave;
@@ -579,8 +736,12 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JDialog jDialogCredentials;
     private javax.swing.JDialog jDialogDemoLive;
     private javax.swing.JDialog jDialogMeterNumber;
+    private javax.swing.JDialog jDialogPreviewVend;
     private javax.swing.JLabel jLabelAuthCode;
     private javax.swing.JLabel jLabelPassword;
+    private javax.swing.JLabel jLabelPreviewAmount;
+    private javax.swing.JLabel jLabelPreviewMeterNum;
+    private javax.swing.JLabel jLabelPreviewPhoneNum;
     private javax.swing.JLabel jLabelUsername;
     private javax.swing.JLabel jLabelValidateMeterNum;
     private javax.swing.JMenu jMenu1;
@@ -593,6 +754,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelDemoLive;
     private javax.swing.JPanel jPanelDisplay;
     private javax.swing.JPanel jPanelValidateMeterNum;
+    private javax.swing.JPanel jPanelValidateMeterNum1;
     private javax.swing.JRadioButton jRadioButtonDemo;
     private javax.swing.JRadioButton jRadioButtonLive;
     private javax.swing.JScrollPane jScrollPaneDisplayValues;
@@ -601,6 +763,9 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextFieldAuthCode;
     private javax.swing.JTextField jTextFieldPassword;
+    private javax.swing.JTextField jTextFieldPreviewAmount;
+    private javax.swing.JTextField jTextFieldPreviewMeterNum;
+    private javax.swing.JTextField jTextFieldPreviewPhoneNum;
     private javax.swing.JTextField jTextFieldUsername;
     private javax.swing.JTextField jTextFieldValidateMeterNum;
     // End of variables declaration//GEN-END:variables
