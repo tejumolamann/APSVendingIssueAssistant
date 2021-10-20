@@ -27,7 +27,7 @@ public class APSPanel extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jDialogMeterNumber = new javax.swing.JDialog();
+        jDialogValidateMeterNum = new javax.swing.JDialog();
         jPanelValidateMeterNum = new javax.swing.JPanel();
         jLabelValidateMeterNum = new javax.swing.JLabel();
         jTextFieldValidateMeterNum = new javax.swing.JTextField();
@@ -72,8 +72,8 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonPreviewVend = new javax.swing.JButton();
         jButtonVend = new javax.swing.JButton();
         jButtonGetBalance = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jButtonVendTrasactionRef = new javax.swing.JButton();
+        jButtonCopyToken = new javax.swing.JButton();
         jPanelDisplay = new javax.swing.JPanel();
         jScrollPaneDisplayValues = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
@@ -84,12 +84,12 @@ public class APSPanel extends javax.swing.JFrame {
         credentialsMenuItem = new javax.swing.JMenuItem();
         jMenuItemDemoLive = new javax.swing.JMenuItem();
 
-        jDialogMeterNumber.setTitle("Validate Meter Number");
-        jDialogMeterNumber.setAlwaysOnTop(true);
-        jDialogMeterNumber.setModal(true);
-        jDialogMeterNumber.setResizable(false);
-        jDialogMeterNumber.setSize(new java.awt.Dimension(400, 170));
-        jDialogMeterNumber.setLocationRelativeTo(null);
+        jDialogValidateMeterNum.setTitle("Validate Meter Number");
+        jDialogValidateMeterNum.setAlwaysOnTop(true);
+        jDialogValidateMeterNum.setModal(true);
+        jDialogValidateMeterNum.setResizable(false);
+        jDialogValidateMeterNum.setSize(new java.awt.Dimension(400, 170));
+        jDialogValidateMeterNum.setLocationRelativeTo(null);
 
         jPanelValidateMeterNum.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -156,18 +156,18 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jDialogMeterNumberLayout = new javax.swing.GroupLayout(jDialogMeterNumber.getContentPane());
-        jDialogMeterNumber.getContentPane().setLayout(jDialogMeterNumberLayout);
-        jDialogMeterNumberLayout.setHorizontalGroup(
-            jDialogMeterNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jDialogMeterNumberLayout.createSequentialGroup()
+        javax.swing.GroupLayout jDialogValidateMeterNumLayout = new javax.swing.GroupLayout(jDialogValidateMeterNum.getContentPane());
+        jDialogValidateMeterNum.getContentPane().setLayout(jDialogValidateMeterNumLayout);
+        jDialogValidateMeterNumLayout.setHorizontalGroup(
+            jDialogValidateMeterNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogValidateMeterNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanelValidateMeterNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        jDialogMeterNumberLayout.setVerticalGroup(
-            jDialogMeterNumberLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jDialogMeterNumberLayout.createSequentialGroup()
+        jDialogValidateMeterNumLayout.setVerticalGroup(
+            jDialogValidateMeterNumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogValidateMeterNumLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanelValidateMeterNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -513,10 +513,15 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonGetBalance.setText("Get Balance");
         jButtonGetBalance.setToolTipText("Get balance in wallet");
 
-        jButton1.setText("Vend Transaction Reference");
-        jButton1.setToolTipText("Vend a previously generated transaction reference");
+        jButtonVendTrasactionRef.setText("Vend Transaction Reference");
+        jButtonVendTrasactionRef.setToolTipText("Vend a previously generated transaction reference");
+        jButtonVendTrasactionRef.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonVendTrasactionRefActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Copy Token");
+        jButtonCopyToken.setText("Copy Token");
 
         javax.swing.GroupLayout jPanelControlsLayout = new javax.swing.GroupLayout(jPanelControls);
         jPanelControls.setLayout(jPanelControlsLayout);
@@ -528,9 +533,9 @@ public class APSPanel extends javax.swing.JFrame {
                     .addComponent(jButtonValidate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonPreviewVend, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jButtonVend, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonVendTrasactionRef, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonGetBalance, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButtonCopyToken, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanelControlsLayout.setVerticalGroup(
@@ -543,11 +548,11 @@ public class APSPanel extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonVend)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
+                .addComponent(jButtonVendTrasactionRef)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonGetBalance)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
+                .addComponent(jButtonCopyToken)
                 .addContainerGap(168, Short.MAX_VALUE))
         );
 
@@ -636,7 +641,12 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelDemoLiveActionPerformed
 
     private void jButtonValidateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValidateActionPerformed
-        jDialogMeterNumber.setVisible(true);
+        jLabelValidateMeterNum.setText("Enter meter number");
+        jButtonValidateMeterNum.setText("Validate");
+        jButtonValidateMeterNum.setToolTipText("Click to validate meter number");
+        jDialogValidateMeterNum.setTitle("Validtate Meter Number");
+        
+        jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonValidateActionPerformed
 
     private void jTextFieldValidateMeterNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldValidateMeterNumKeyTyped
@@ -655,7 +665,7 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonClearMeterNumActionPerformed
 
     private void jButtonCancelValidateMeterNumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelValidateMeterNumActionPerformed
-        jDialogMeterNumber.setVisible(false);
+        jDialogValidateMeterNum.setVisible(false);
     }//GEN-LAST:event_jButtonCancelValidateMeterNumActionPerformed
 
     private void jButtonCancelSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelSaveActionPerformed
@@ -689,6 +699,14 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogPreviewVend.setTitle("Vend Meter");
         jDialogPreviewVend.setVisible(true);
     }//GEN-LAST:event_jButtonVendActionPerformed
+
+    private void jButtonVendTrasactionRefActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVendTrasactionRefActionPerformed
+        jLabelValidateMeterNum.setText("Enter transaction reference");
+        jButtonValidateMeterNum.setText("Vend");
+        jButtonValidateMeterNum.setToolTipText("Click to vend transaction reference");
+        jDialogValidateMeterNum.setTitle("Vend Transaction Reference");
+        jDialogValidateMeterNum.setVisible(true);
+    }//GEN-LAST:event_jButtonVendTrasactionRefActionPerformed
 
     /**
      * @param args the command line arguments
@@ -729,8 +747,6 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroupDemoLive;
     private javax.swing.JMenuItem credentialsMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonCancelDemoLive;
     private javax.swing.JButton jButtonCancelPreview;
     private javax.swing.JButton jButtonCancelSave;
@@ -738,6 +754,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonClearCredentials;
     private javax.swing.JButton jButtonClearMeterNum;
     private javax.swing.JButton jButtonClearPreview;
+    private javax.swing.JButton jButtonCopyToken;
     private javax.swing.JButton jButtonGenerate;
     private javax.swing.JButton jButtonGetBalance;
     private javax.swing.JButton jButtonPreviewVend;
@@ -746,10 +763,11 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonValidate;
     private javax.swing.JButton jButtonValidateMeterNum;
     private javax.swing.JButton jButtonVend;
+    private javax.swing.JButton jButtonVendTrasactionRef;
     private javax.swing.JDialog jDialogCredentials;
     private javax.swing.JDialog jDialogDemoLive;
-    private javax.swing.JDialog jDialogMeterNumber;
     private javax.swing.JDialog jDialogPreviewVend;
+    private javax.swing.JDialog jDialogValidateMeterNum;
     private javax.swing.JLabel jLabelAuthCode;
     private javax.swing.JLabel jLabelPassword;
     private javax.swing.JLabel jLabelPreviewAmount;
