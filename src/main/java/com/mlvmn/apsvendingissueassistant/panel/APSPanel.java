@@ -504,6 +504,11 @@ public class APSPanel extends javax.swing.JFrame {
 
         jButtonVend.setText("Vend Meter Number");
         jButtonVend.setToolTipText("Vend for a meter number");
+        jButtonVend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonVendActionPerformed(evt);
+            }
+        });
 
         jButtonGetBalance.setText("Get Balance");
         jButtonGetBalance.setToolTipText("Get balance in wallet");
@@ -674,8 +679,16 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelPreviewActionPerformed
 
     private void jButtonPreviewVendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPreviewVendActionPerformed
+        jButtonGenerate.setText("Generate");
+        jDialogPreviewVend.setTitle("Preview Vend/Transaction Reference");
         jDialogPreviewVend.setVisible(true);
     }//GEN-LAST:event_jButtonPreviewVendActionPerformed
+
+    private void jButtonVendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVendActionPerformed
+        jButtonGenerate.setText("Vend");
+        jDialogPreviewVend.setTitle("Vend Meter");
+        jDialogPreviewVend.setVisible(true);
+    }//GEN-LAST:event_jButtonVendActionPerformed
 
     /**
      * @param args the command line arguments
