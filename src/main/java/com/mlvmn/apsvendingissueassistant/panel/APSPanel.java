@@ -5,16 +5,33 @@
  */
 package com.mlvmn.apsvendingissueassistant.panel;
 
+import com.mlvmn.apsvendingissueassistant.engine.VendControl;
+import com.mlvmn.apsvendingissueassistant.resources.Settings;
+import javax.swing.ButtonModel;
+
 /**
  *
  * @author tejum
  */
 public class APSPanel extends javax.swing.JFrame {
+    
+    /**
+     * For controlling the vending operations
+     */
+    private final VendControl vc;
+    
+    /**
+     * For saving and retrieving vending settings
+     */
+    private final Settings vs;
 
     /**
      * Creates new form APSPanel
      */
     public APSPanel() {
+        vc = VendControl.getInstance();
+        vs = Settings.getSettings();
+        
         initComponents();
     }
 
@@ -176,7 +193,6 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogCredentials.setTitle("Credentials");
         jDialogCredentials.setAlwaysOnTop(true);
         jDialogCredentials.setLocation(new java.awt.Point(0, 0));
-        jDialogCredentials.setLocationByPlatform(true);
         jDialogCredentials.setMinimumSize(new java.awt.Dimension(400, 350));
         jDialogCredentials.setModal(true);
         jDialogCredentials.setResizable(false);
@@ -325,6 +341,11 @@ public class APSPanel extends javax.swing.JFrame {
         });
 
         jButtonSaveDemoLive1.setText("Save");
+        jButtonSaveDemoLive1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSaveDemoLive1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelDemoLiveLayout = new javax.swing.GroupLayout(jPanelDemoLive);
         jPanelDemoLive.setLayout(jPanelDemoLiveLayout);
@@ -582,6 +603,11 @@ public class APSPanel extends javax.swing.JFrame {
         jMenu1.setText("File");
 
         exitMenuItem.setText("Exit");
+        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitMenuItemActionPerformed(evt);
+            }
+        });
         jMenu1.add(exitMenuItem);
 
         jMenuBar1.add(jMenu1);
@@ -633,6 +659,15 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_credentialsMenuItemActionPerformed
 
     private void jMenuItemDemoLiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDemoLiveActionPerformed
+        
+        //check vending state of the program and set the right radio button to 
+        //selected accordingly
+        if(vs.retrieveDemoLiveState()){
+            jRadioButtonLive.setSelected(true);
+        } else{
+            jRadioButtonDemo.setSelected(true);
+        }
+        
         jDialogDemoLive.setVisible(true);
     }//GEN-LAST:event_jMenuItemDemoLiveActionPerformed
 
@@ -707,6 +742,24 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogValidateMeterNum.setTitle("Vend Transaction Reference");
         jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonVendTrasactionRefActionPerformed
+
+    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_exitMenuItemActionPerformed
+
+    private void jButtonSaveDemoLive1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveDemoLive1ActionPerformed
+        
+        //get the selected button
+        ButtonModel buttonModel = buttonGroupDemoLive.getSelection();
+        
+        if(buttonModel.equals(jRadioButtonDemo.getModel())){    //if demo vend is selected
+            vs.storeDemoLiveState(false);
+        } else if(buttonModel.equals(jRadioButtonLive.getModel())){ //if live vend is selected
+            vs.storeDemoLiveState(true);
+        }
+        
+        jDialogDemoLive.setVisible(false);
+    }//GEN-LAST:event_jButtonSaveDemoLive1ActionPerformed
 
     /**
      * @param args the command line arguments
