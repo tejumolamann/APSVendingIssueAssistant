@@ -8,18 +8,19 @@ package com.mlvmn.apsvendingissueassistant.panel;
 import com.mlvmn.apsvendingissueassistant.engine.VendControl;
 import com.mlvmn.apsvendingissueassistant.resources.Settings;
 import javax.swing.ButtonModel;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author tejum
  */
 public class APSPanel extends javax.swing.JFrame {
-    
+
     /**
      * For controlling the vending operations
      */
     private final VendControl vc;
-    
+
     /**
      * For saving and retrieving vending settings
      */
@@ -31,7 +32,7 @@ public class APSPanel extends javax.swing.JFrame {
     public APSPanel() {
         vc = VendControl.getInstance();
         vs = Settings.getSettings();
-        
+
         initComponents();
     }
 
@@ -58,14 +59,14 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldUsername = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         jLabelPassword = new javax.swing.JLabel();
-        jTextFieldPassword = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
         jLabelAuthCode = new javax.swing.JLabel();
         jTextFieldAuthCode = new javax.swing.JTextField();
+        jPasswordFieldCredentials = new javax.swing.JPasswordField();
         jPanelCredentials2 = new javax.swing.JPanel();
         jButtonClearCredentials = new javax.swing.JButton();
         jButtonCancelSave = new javax.swing.JButton();
-        jButtonSave = new javax.swing.JButton();
+        jButtonSaveCredentials = new javax.swing.JButton();
         jDialogDemoLive = new javax.swing.JDialog();
         jPanelDemoLive = new javax.swing.JPanel();
         jRadioButtonLive = new javax.swing.JRadioButton();
@@ -192,7 +193,6 @@ public class APSPanel extends javax.swing.JFrame {
 
         jDialogCredentials.setTitle("Credentials");
         jDialogCredentials.setAlwaysOnTop(true);
-        jDialogCredentials.setLocation(new java.awt.Point(0, 0));
         jDialogCredentials.setMinimumSize(new java.awt.Dimension(400, 350));
         jDialogCredentials.setModal(true);
         jDialogCredentials.setResizable(false);
@@ -202,14 +202,29 @@ public class APSPanel extends javax.swing.JFrame {
         jLabelUsername.setText("Username");
 
         jTextFieldUsername.setToolTipText("Enter username");
+        jTextFieldUsername.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldUsernameActionPerformed(evt);
+            }
+        });
 
         jLabelPassword.setText("Password");
-
-        jTextFieldPassword.setToolTipText("Enter password");
 
         jLabelAuthCode.setText("Authorisation Code");
 
         jTextFieldAuthCode.setToolTipText("Enter authorisation code");
+        jTextFieldAuthCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldAuthCodeActionPerformed(evt);
+            }
+        });
+
+        jPasswordFieldCredentials.setToolTipText("Enter a valid password");
+        jPasswordFieldCredentials.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPasswordFieldCredentialsActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelCredentialsLayout = new javax.swing.GroupLayout(jPanelCredentials);
         jPanelCredentials.setLayout(jPanelCredentialsLayout);
@@ -220,7 +235,6 @@ public class APSPanel extends javax.swing.JFrame {
                 .addGroup(jPanelCredentialsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTextFieldUsername)
                     .addComponent(jSeparator1)
-                    .addComponent(jTextFieldPassword)
                     .addComponent(jSeparator2)
                     .addComponent(jTextFieldAuthCode)
                     .addGroup(jPanelCredentialsLayout.createSequentialGroup()
@@ -228,7 +242,8 @@ public class APSPanel extends javax.swing.JFrame {
                             .addComponent(jLabelUsername)
                             .addComponent(jLabelPassword)
                             .addComponent(jLabelAuthCode))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPasswordFieldCredentials))
                 .addContainerGap())
         );
         jPanelCredentialsLayout.setVerticalGroup(
@@ -242,9 +257,9 @@ public class APSPanel extends javax.swing.JFrame {
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelPassword)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextFieldPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPasswordFieldCredentials, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(13, 13, 13)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelAuthCode)
@@ -269,7 +284,12 @@ public class APSPanel extends javax.swing.JFrame {
             }
         });
 
-        jButtonSave.setText("Save");
+        jButtonSaveCredentials.setText("Save");
+        jButtonSaveCredentials.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSaveCredentialsActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelCredentials2Layout = new javax.swing.GroupLayout(jPanelCredentials2);
         jPanelCredentials2.setLayout(jPanelCredentials2Layout);
@@ -281,7 +301,7 @@ public class APSPanel extends javax.swing.JFrame {
                 .addGap(133, 133, 133)
                 .addComponent(jButtonCancelSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(jButtonSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonSaveCredentials, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanelCredentials2Layout.setVerticalGroup(
@@ -291,7 +311,7 @@ public class APSPanel extends javax.swing.JFrame {
                 .addGroup(jPanelCredentials2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonClearCredentials)
                     .addComponent(jButtonCancelSave)
-                    .addComponent(jButtonSave))
+                    .addComponent(jButtonSaveCredentials))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -655,19 +675,24 @@ public class APSPanel extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void credentialsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_credentialsMenuItemActionPerformed
+        String[] creds = vs.retrieveCredentials();
+        
+        jTextFieldUsername.setText(creds[0]);
+        jTextFieldAuthCode.setText(creds[1]);
+        jPasswordFieldCredentials.setText("");
         jDialogCredentials.setVisible(true);
     }//GEN-LAST:event_credentialsMenuItemActionPerformed
 
     private void jMenuItemDemoLiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDemoLiveActionPerformed
-        
+
         //check vending state of the program and set the right radio button to 
         //selected accordingly
-        if(vs.retrieveDemoLiveState()){
+        if (vs.retrieveDemoLiveState()) {
             jRadioButtonLive.setSelected(true);
-        } else{
+        } else {
             jRadioButtonDemo.setSelected(true);
         }
-        
+
         jDialogDemoLive.setVisible(true);
     }//GEN-LAST:event_jMenuItemDemoLiveActionPerformed
 
@@ -680,15 +705,15 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonValidateMeterNum.setText("Validate");
         jButtonValidateMeterNum.setToolTipText("Click to validate meter number");
         jDialogValidateMeterNum.setTitle("Validtate Meter Number");
-        
+
         jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonValidateActionPerformed
 
     private void jTextFieldValidateMeterNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldValidateMeterNumKeyTyped
-        if(evt.getComponent().equals(jTextFieldValidateMeterNum)){
-            if(!jTextFieldValidateMeterNum.getText().isEmpty()){
+        if (evt.getComponent().equals(jTextFieldValidateMeterNum)) {
+            if (!jTextFieldValidateMeterNum.getText().isEmpty()) {
                 jButtonValidateMeterNum.setEnabled(true);
-            } else{
+            } else {
                 jButtonValidateMeterNum.setEnabled(false);
             }
         }
@@ -709,7 +734,7 @@ public class APSPanel extends javax.swing.JFrame {
 
     private void jButtonClearCredentialsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearCredentialsActionPerformed
         jTextFieldUsername.setText("");
-        jTextFieldPassword.setText("");
+        jPasswordFieldCredentials.setText("");
         jTextFieldAuthCode.setText("");
     }//GEN-LAST:event_jButtonClearCredentialsActionPerformed
 
@@ -748,18 +773,47 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
     private void jButtonSaveDemoLive1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveDemoLive1ActionPerformed
-        
+
         //get the selected button
         ButtonModel buttonModel = buttonGroupDemoLive.getSelection();
-        
-        if(buttonModel.equals(jRadioButtonDemo.getModel())){    //if demo vend is selected
+
+        if (buttonModel.equals(jRadioButtonDemo.getModel())) {    //if demo vend is selected
             vs.storeDemoLiveState(false);
-        } else if(buttonModel.equals(jRadioButtonLive.getModel())){ //if live vend is selected
+        } else if (buttonModel.equals(jRadioButtonLive.getModel())) { //if live vend is selected
             vs.storeDemoLiveState(true);
         }
-        
+
         jDialogDemoLive.setVisible(false);
     }//GEN-LAST:event_jButtonSaveDemoLive1ActionPerformed
+
+    private void jButtonSaveCredentialsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveCredentialsActionPerformed
+        
+        //upon clicking save button, if any of the fields are empty then show a 
+        //warning message, else go ahead and save
+        if (jTextFieldUsername.getText().isEmpty() || jPasswordFieldCredentials.getPassword().length == 0 || jTextFieldAuthCode.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(jDialogCredentials, "Please fill in all fields!", "Warning: Empty fields", JOptionPane.ERROR_MESSAGE);
+        } else {
+            vs.storeCredentials(
+                    jTextFieldUsername.getText(),
+                    jPasswordFieldCredentials.getPassword(),
+                    jTextFieldAuthCode.getText()
+            );
+            
+            jDialogCredentials.setVisible(false);
+        }
+    }//GEN-LAST:event_jButtonSaveCredentialsActionPerformed
+
+    private void jTextFieldUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldUsernameActionPerformed
+        jButtonSaveCredentialsActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldUsernameActionPerformed
+
+    private void jPasswordFieldCredentialsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordFieldCredentialsActionPerformed
+        jButtonSaveCredentialsActionPerformed(evt);
+    }//GEN-LAST:event_jPasswordFieldCredentialsActionPerformed
+
+    private void jTextFieldAuthCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldAuthCodeActionPerformed
+        jButtonSaveCredentialsActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldAuthCodeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -811,7 +865,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonGenerate;
     private javax.swing.JButton jButtonGetBalance;
     private javax.swing.JButton jButtonPreviewVend;
-    private javax.swing.JButton jButtonSave;
+    private javax.swing.JButton jButtonSaveCredentials;
     private javax.swing.JButton jButtonSaveDemoLive1;
     private javax.swing.JButton jButtonValidate;
     private javax.swing.JButton jButtonValidateMeterNum;
@@ -839,6 +893,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelDisplay;
     private javax.swing.JPanel jPanelValidateMeterNum;
     private javax.swing.JPanel jPanelValidateMeterNum1;
+    private javax.swing.JPasswordField jPasswordFieldCredentials;
     private javax.swing.JRadioButton jRadioButtonDemo;
     private javax.swing.JRadioButton jRadioButtonLive;
     private javax.swing.JScrollPane jScrollPaneDisplayValues;
@@ -846,7 +901,6 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextFieldAuthCode;
-    private javax.swing.JTextField jTextFieldPassword;
     private javax.swing.JTextField jTextFieldPreviewAmount;
     private javax.swing.JTextField jTextFieldPreviewMeterNum;
     private javax.swing.JTextField jTextFieldPreviewPhoneNum;

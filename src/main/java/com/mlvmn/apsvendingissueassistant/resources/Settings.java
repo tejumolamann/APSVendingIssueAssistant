@@ -36,6 +36,9 @@ public class Settings {
     //Keys to be used to store and retrieve values in the Properties object and 
     //ultimately the properties file.
     private static final String IS_LIVE = "isLive";
+    private static final String AUTHENTICATION_CODE = "authenticationCode";
+    private static final String PASSWORD = "password";
+    private static final String USERNAME = "username";
     
     /**
      * Constructor
@@ -106,5 +109,38 @@ public class Settings {
      */
     public boolean retrieveDemoLiveState(){
         return Boolean.valueOf(this.prop.getProperty(IS_LIVE));
+    }
+    
+    /**
+     *This method stores the credentials into the Properties object and the file.
+     * 
+     * @param username Username to access Access Power API
+     * @param password Password to access Access Power API
+     * @param authCode The authentication code to login
+     */
+    public void storeCredentials(String username, char[] password, String authCode){
+        //TODO Implement standard encryption and descryption here
+        
+        this.prop.setProperty(USERNAME, username);
+        this.prop.setProperty(PASSWORD, new String(password));
+        this.prop.setProperty(AUTHENTICATION_CODE, authCode);
+        saveSettings();
+    }
+        
+    /**
+     * This method retrieves the credentials (username, password and 
+     * authentication code) from the Properties object.
+     * 
+     * @return String array containing the credentials.
+     */
+    public String[] retrieveCredentials(){
+        //TODO Implement standard encryption and descryption here
+        
+        String[] creds = {
+            this.prop.getProperty(USERNAME, ""), 
+            this.prop.getProperty(AUTHENTICATION_CODE, "")
+        };
+        
+        return creds;
     }
 }
