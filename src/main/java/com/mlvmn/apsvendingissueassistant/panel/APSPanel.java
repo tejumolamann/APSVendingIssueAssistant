@@ -85,6 +85,13 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldPreviewAmount = new javax.swing.JTextField();
         jLabelPreviewPhoneNum = new javax.swing.JLabel();
         jTextFieldPreviewPhoneNum = new javax.swing.JTextField();
+        jDialogServiceCharge = new javax.swing.JDialog();
+        jPanellServiceCharge = new javax.swing.JPanel();
+        jLabelServiceCharge = new javax.swing.JLabel();
+        jTextFieldServiceCharge = new javax.swing.JTextField();
+        jButtonClearServiceCharge = new javax.swing.JButton();
+        jButtonCancelServiceCharge = new javax.swing.JButton();
+        jButtonSaveServiceCharge = new javax.swing.JButton();
         jPanelControls = new javax.swing.JPanel();
         jButtonValidate = new javax.swing.JButton();
         jButtonPreviewVend = new javax.swing.JButton();
@@ -101,6 +108,7 @@ public class APSPanel extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         credentialsMenuItem = new javax.swing.JMenuItem();
         jMenuItemDemoLive = new javax.swing.JMenuItem();
+        jMenuItemServiceCharge = new javax.swing.JMenuItem();
 
         jDialogValidateMeterNum.setTitle("Validate Meter Number");
         jDialogValidateMeterNum.setAlwaysOnTop(true);
@@ -521,6 +529,106 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jDialogServiceCharge.setTitle("Service Charge");
+        jDialogServiceCharge.setAlwaysOnTop(true);
+        jDialogServiceCharge.setModal(true);
+        jDialogServiceCharge.setResizable(false);
+        jDialogServiceCharge.setSize(new java.awt.Dimension(400, 170));
+        jDialogServiceCharge.setLocationRelativeTo(null);
+
+        jPanellServiceCharge.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabelServiceCharge.setText("Enter amount for service charge");
+
+        jTextFieldServiceCharge.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTextFieldServiceCharge.setText("0.0");
+        jTextFieldServiceCharge.setToolTipText("Type in an amount to charge customers for the service");
+        jTextFieldServiceCharge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldServiceChargeActionPerformed(evt);
+            }
+        });
+        jTextFieldServiceCharge.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldServiceChargeKeyTyped(evt);
+            }
+        });
+
+        jButtonClearServiceCharge.setText("Clear");
+        jButtonClearServiceCharge.setToolTipText("Clear field");
+        jButtonClearServiceCharge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonClearServiceChargeActionPerformed(evt);
+            }
+        });
+
+        jButtonCancelServiceCharge.setText("Cancel");
+        jButtonCancelServiceCharge.setToolTipText("Cancel");
+        jButtonCancelServiceCharge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelServiceChargeActionPerformed(evt);
+            }
+        });
+
+        jButtonSaveServiceCharge.setText("Save");
+        jButtonSaveServiceCharge.setToolTipText("Click to save the amount of service charge");
+        jButtonSaveServiceCharge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSaveServiceChargeActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanellServiceChargeLayout = new javax.swing.GroupLayout(jPanellServiceCharge);
+        jPanellServiceCharge.setLayout(jPanellServiceChargeLayout);
+        jPanellServiceChargeLayout.setHorizontalGroup(
+            jPanellServiceChargeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanellServiceChargeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanellServiceChargeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextFieldServiceCharge)
+                    .addGroup(jPanellServiceChargeLayout.createSequentialGroup()
+                        .addComponent(jLabelServiceCharge)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanellServiceChargeLayout.createSequentialGroup()
+                        .addComponent(jButtonClearServiceCharge)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 159, Short.MAX_VALUE)
+                        .addComponent(jButtonSaveServiceCharge)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonCancelServiceCharge)))
+                .addContainerGap())
+        );
+        jPanellServiceChargeLayout.setVerticalGroup(
+            jPanellServiceChargeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanellServiceChargeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelServiceCharge)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldServiceCharge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanellServiceChargeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonClearServiceCharge)
+                    .addComponent(jButtonCancelServiceCharge)
+                    .addComponent(jButtonSaveServiceCharge))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jDialogServiceChargeLayout = new javax.swing.GroupLayout(jDialogServiceCharge.getContentPane());
+        jDialogServiceCharge.getContentPane().setLayout(jDialogServiceChargeLayout);
+        jDialogServiceChargeLayout.setHorizontalGroup(
+            jDialogServiceChargeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogServiceChargeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanellServiceCharge, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jDialogServiceChargeLayout.setVerticalGroup(
+            jDialogServiceChargeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogServiceChargeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanellServiceCharge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Access Power Systems Vending Issue Assistant");
         setAlwaysOnTop(true);
@@ -650,6 +758,15 @@ public class APSPanel extends javax.swing.JFrame {
             }
         });
         jMenu2.add(jMenuItemDemoLive);
+
+        jMenuItemServiceCharge.setText("Service Charge...");
+        jMenuItemServiceCharge.setToolTipText("Add or edit amount charged to the customer for using the service");
+        jMenuItemServiceCharge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemServiceChargeActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItemServiceCharge);
 
         jMenuBar1.add(jMenu2);
 
@@ -815,6 +932,54 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonSaveCredentialsActionPerformed(evt);
     }//GEN-LAST:event_jTextFieldAuthCodeActionPerformed
 
+    private void jTextFieldServiceChargeKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldServiceChargeKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldServiceChargeKeyTyped
+
+    private void jButtonClearServiceChargeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearServiceChargeActionPerformed
+        jTextFieldServiceCharge.setText("0.0");
+    }//GEN-LAST:event_jButtonClearServiceChargeActionPerformed
+
+    private void jButtonCancelServiceChargeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelServiceChargeActionPerformed
+        jDialogServiceCharge.setVisible(false);
+    }//GEN-LAST:event_jButtonCancelServiceChargeActionPerformed
+
+    private void jMenuItemServiceChargeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemServiceChargeActionPerformed
+        jTextFieldServiceCharge.setText(vs.retrieveServiceCharge());
+        jDialogServiceCharge.setVisible(true);
+    }//GEN-LAST:event_jMenuItemServiceChargeActionPerformed
+
+    private void jButtonSaveServiceChargeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveServiceChargeActionPerformed
+        
+        //Validate what was typed
+        if(jTextFieldServiceCharge.getText().isEmpty()){    //if the text field is empty
+            JOptionPane.showMessageDialog(
+                    jDialogServiceCharge, 
+                    "Service Charge cannot be blank.\nEnter an amount greater than or equal to zero", 
+                    "Warning: Blank Service Charge", 
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } else{     //if not empty
+            try {   //let's make sure it was a valid number
+                double amount = Double.parseDouble(jTextFieldServiceCharge.getText());
+                vs.storeServiceCharge(amount);
+                
+                jDialogServiceCharge.setVisible(false);
+            } catch (NumberFormatException numberFormatException) {
+                JOptionPane.showMessageDialog(
+                        jDialogServiceCharge,
+                        "Only valid numbers are alowed",
+                        "Warning: Invalid Amount",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
+    }//GEN-LAST:event_jButtonSaveServiceChargeActionPerformed
+
+    private void jTextFieldServiceChargeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldServiceChargeActionPerformed
+        jButtonSaveServiceChargeActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldServiceChargeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -857,16 +1022,19 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCancelDemoLive;
     private javax.swing.JButton jButtonCancelPreview;
     private javax.swing.JButton jButtonCancelSave;
+    private javax.swing.JButton jButtonCancelServiceCharge;
     private javax.swing.JButton jButtonCancelValidateMeterNum;
     private javax.swing.JButton jButtonClearCredentials;
     private javax.swing.JButton jButtonClearMeterNum;
     private javax.swing.JButton jButtonClearPreview;
+    private javax.swing.JButton jButtonClearServiceCharge;
     private javax.swing.JButton jButtonCopyToken;
     private javax.swing.JButton jButtonGenerate;
     private javax.swing.JButton jButtonGetBalance;
     private javax.swing.JButton jButtonPreviewVend;
     private javax.swing.JButton jButtonSaveCredentials;
     private javax.swing.JButton jButtonSaveDemoLive1;
+    private javax.swing.JButton jButtonSaveServiceCharge;
     private javax.swing.JButton jButtonValidate;
     private javax.swing.JButton jButtonValidateMeterNum;
     private javax.swing.JButton jButtonVend;
@@ -874,18 +1042,21 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JDialog jDialogCredentials;
     private javax.swing.JDialog jDialogDemoLive;
     private javax.swing.JDialog jDialogPreviewVend;
+    private javax.swing.JDialog jDialogServiceCharge;
     private javax.swing.JDialog jDialogValidateMeterNum;
     private javax.swing.JLabel jLabelAuthCode;
     private javax.swing.JLabel jLabelPassword;
     private javax.swing.JLabel jLabelPreviewAmount;
     private javax.swing.JLabel jLabelPreviewMeterNum;
     private javax.swing.JLabel jLabelPreviewPhoneNum;
+    private javax.swing.JLabel jLabelServiceCharge;
     private javax.swing.JLabel jLabelUsername;
     private javax.swing.JLabel jLabelValidateMeterNum;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItemDemoLive;
+    private javax.swing.JMenuItem jMenuItemServiceCharge;
     private javax.swing.JPanel jPanelControls;
     private javax.swing.JPanel jPanelCredentials;
     private javax.swing.JPanel jPanelCredentials2;
@@ -893,6 +1064,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelDisplay;
     private javax.swing.JPanel jPanelValidateMeterNum;
     private javax.swing.JPanel jPanelValidateMeterNum1;
+    private javax.swing.JPanel jPanellServiceCharge;
     private javax.swing.JPasswordField jPasswordFieldCredentials;
     private javax.swing.JRadioButton jRadioButtonDemo;
     private javax.swing.JRadioButton jRadioButtonLive;
@@ -904,6 +1076,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldPreviewAmount;
     private javax.swing.JTextField jTextFieldPreviewMeterNum;
     private javax.swing.JTextField jTextFieldPreviewPhoneNum;
+    private javax.swing.JTextField jTextFieldServiceCharge;
     private javax.swing.JTextField jTextFieldUsername;
     private javax.swing.JTextField jTextFieldValidateMeterNum;
     // End of variables declaration//GEN-END:variables

@@ -39,6 +39,7 @@ public class Settings {
     private static final String AUTHENTICATION_CODE = "authenticationCode";
     private static final String PASSWORD = "password";
     private static final String USERNAME = "username";
+    private static final String SERVICE_CHARGE = "serviceCharge";
     
     /**
      * Constructor
@@ -143,4 +144,25 @@ public class Settings {
         
         return creds;
     }
+
+    /**
+     * This method retrieve the amount to be charged to customers for using the 
+     * vending service and this amount will be deducted from what the customer 
+     * paid.
+     * @return String value of the amount of service charge.
+     */
+    public String retrieveServiceCharge() {
+        return this.prop.getProperty(SERVICE_CHARGE, "0.0");
+    }
+
+    /**
+     * This method handles the storing of the amount charged to customers for 
+     * using the service.
+     * @param amount Service charge amount.
+     */
+    public void storeServiceCharge(double amount) {
+        this.prop.setProperty(SERVICE_CHARGE, String.valueOf(amount));
+        saveSettings();
+    }
+    
 }
