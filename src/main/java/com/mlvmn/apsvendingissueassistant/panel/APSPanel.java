@@ -7,8 +7,15 @@ package com.mlvmn.apsvendingissueassistant.panel;
 
 import com.mlvmn.apsvendingissueassistant.engine.VendControl;
 import com.mlvmn.apsvendingissueassistant.resources.Settings;
+import java.awt.HeadlessException;
+import java.io.IOException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ButtonModel;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -25,6 +32,8 @@ public class APSPanel extends javax.swing.JFrame {
      * For saving and retrieving vending settings
      */
     private final Settings vs;
+    
+    private SwingWorker<String, Void> worker;
 
     /**
      * Creates new form APSPanel
@@ -53,7 +62,6 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonCancelValidateMeterNum = new javax.swing.JButton();
         jButtonValidateMeterNum = new javax.swing.JButton();
         jDialogCredentials = new javax.swing.JDialog();
-        jDialogCredentials.setLocationRelativeTo(null);
         jPanelCredentials = new javax.swing.JPanel();
         jLabelUsername = new javax.swing.JLabel();
         jTextFieldUsername = new javax.swing.JTextField();
@@ -63,6 +71,9 @@ public class APSPanel extends javax.swing.JFrame {
         jLabelAuthCode = new javax.swing.JLabel();
         jTextFieldAuthCode = new javax.swing.JTextField();
         jPasswordFieldCredentials = new javax.swing.JPasswordField();
+        jSeparator4 = new javax.swing.JSeparator();
+        jLabelAuthCodeMAchineID = new javax.swing.JLabel();
+        jTextFieldMachineID = new javax.swing.JTextField();
         jPanelCredentials2 = new javax.swing.JPanel();
         jButtonClearCredentials = new javax.swing.JButton();
         jButtonCancelSave = new javax.swing.JButton();
@@ -92,6 +103,11 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonClearServiceCharge = new javax.swing.JButton();
         jButtonCancelServiceCharge = new javax.swing.JButton();
         jButtonSaveServiceCharge = new javax.swing.JButton();
+        jDialogLoading = new javax.swing.JDialog();
+        jPanelLoading = new javax.swing.JPanel();
+        jProgressBarLoading = new javax.swing.JProgressBar();
+        jLabelLoading = new javax.swing.JLabel();
+        jButtonLoadingCancelTask = new javax.swing.JButton();
         jPanelControls = new javax.swing.JPanel();
         jButtonValidate = new javax.swing.JButton();
         jButtonPreviewVend = new javax.swing.JButton();
@@ -103,9 +119,9 @@ public class APSPanel extends javax.swing.JFrame {
         jScrollPaneDisplayValues = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        jMenuFile = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        jMenuSettings = new javax.swing.JMenu();
         credentialsMenuItem = new javax.swing.JMenuItem();
         jMenuItemDemoLive = new javax.swing.JMenuItem();
         jMenuItemServiceCharge = new javax.swing.JMenuItem();
@@ -201,9 +217,13 @@ public class APSPanel extends javax.swing.JFrame {
 
         jDialogCredentials.setTitle("Credentials");
         jDialogCredentials.setAlwaysOnTop(true);
+        jDialogCredentials.setLocation(new java.awt.Point(0, 0));
         jDialogCredentials.setMinimumSize(new java.awt.Dimension(400, 350));
         jDialogCredentials.setModal(true);
+        jDialogCredentials.setPreferredSize(new java.awt.Dimension(400, 500));
         jDialogCredentials.setResizable(false);
+        jDialogCredentials.setSize(new java.awt.Dimension(400, 410));
+        jDialogCredentials.setLocationRelativeTo(null);
 
         jPanelCredentials.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -234,6 +254,15 @@ public class APSPanel extends javax.swing.JFrame {
             }
         });
 
+        jLabelAuthCodeMAchineID.setText("Machine ID (to be provided by IT Dept.)");
+
+        jTextFieldMachineID.setToolTipText("Enter authorisation code");
+        jTextFieldMachineID.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldMachineIDActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelCredentialsLayout = new javax.swing.GroupLayout(jPanelCredentials);
         jPanelCredentials.setLayout(jPanelCredentialsLayout);
         jPanelCredentialsLayout.setHorizontalGroup(
@@ -245,13 +274,16 @@ public class APSPanel extends javax.swing.JFrame {
                     .addComponent(jSeparator1)
                     .addComponent(jSeparator2)
                     .addComponent(jTextFieldAuthCode)
+                    .addComponent(jPasswordFieldCredentials)
                     .addGroup(jPanelCredentialsLayout.createSequentialGroup()
                         .addGroup(jPanelCredentialsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelUsername)
                             .addComponent(jLabelPassword)
-                            .addComponent(jLabelAuthCode))
+                            .addComponent(jLabelAuthCode)
+                            .addComponent(jLabelAuthCodeMAchineID))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPasswordFieldCredentials))
+                    .addComponent(jSeparator4)
+                    .addComponent(jTextFieldMachineID))
                 .addContainerGap())
         );
         jPanelCredentialsLayout.setVerticalGroup(
@@ -273,7 +305,13 @@ public class APSPanel extends javax.swing.JFrame {
                 .addComponent(jLabelAuthCode)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldAuthCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addGap(13, 13, 13)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelAuthCodeMAchineID)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldMachineID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanelCredentials2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -331,7 +369,9 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jDialogCredentialsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanelCredentials, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanelCredentials2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDialogCredentialsLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jPanelCredentials2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jDialogCredentialsLayout.setVerticalGroup(
@@ -629,9 +669,74 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jDialogLoading.setTitle("Loading...");
+        jDialogLoading.setAlwaysOnTop(true);
+        jDialogLoading.setModal(true);
+        jDialogLoading.setResizable(false);
+        jDialogLoading.setSize(new java.awt.Dimension(400, 175));
+        jDialogLoading.setLocationRelativeTo(null);
+
+        jPanelLoading.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jProgressBarLoading.setIndeterminate(true);
+
+        jLabelLoading.setText("Please wait...");
+
+        jButtonLoadingCancelTask.setText("Cancel");
+        jButtonLoadingCancelTask.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonLoadingCancelTaskActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanelLoadingLayout = new javax.swing.GroupLayout(jPanelLoading);
+        jPanelLoading.setLayout(jPanelLoadingLayout);
+        jPanelLoadingLayout.setHorizontalGroup(
+            jPanelLoadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelLoadingLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelLoadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jProgressBarLoading, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
+                    .addGroup(jPanelLoadingLayout.createSequentialGroup()
+                        .addComponent(jLabelLoading)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLoadingLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonLoadingCancelTask)
+                .addGap(154, 154, 154))
+        );
+        jPanelLoadingLayout.setVerticalGroup(
+            jPanelLoadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelLoadingLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelLoading)
+                .addGap(18, 18, 18)
+                .addComponent(jProgressBarLoading, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButtonLoadingCancelTask)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jDialogLoadingLayout = new javax.swing.GroupLayout(jDialogLoading.getContentPane());
+        jDialogLoading.getContentPane().setLayout(jDialogLoadingLayout);
+        jDialogLoadingLayout.setHorizontalGroup(
+            jDialogLoadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogLoadingLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelLoading, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jDialogLoadingLayout.setVerticalGroup(
+            jDialogLoadingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogLoadingLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelLoading, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Access Power Systems Vending Issue Assistant");
-        setAlwaysOnTop(true);
 
         jPanelControls.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -661,6 +766,11 @@ public class APSPanel extends javax.swing.JFrame {
 
         jButtonGetBalance.setText("Get Balance");
         jButtonGetBalance.setToolTipText("Get balance in wallet");
+        jButtonGetBalance.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGetBalanceActionPerformed(evt);
+            }
+        });
 
         jButtonVendTrasactionRef.setText("Vend Transaction Reference");
         jButtonVendTrasactionRef.setToolTipText("Vend a previously generated transaction reference");
@@ -728,7 +838,7 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jMenu1.setText("File");
+        jMenuFile.setText("File");
 
         exitMenuItem.setText("Exit");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -736,11 +846,11 @@ public class APSPanel extends javax.swing.JFrame {
                 exitMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(exitMenuItem);
+        jMenuFile.add(exitMenuItem);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(jMenuFile);
 
-        jMenu2.setText("Settings");
+        jMenuSettings.setText("Settings");
 
         credentialsMenuItem.setText("Credentials...");
         credentialsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -748,7 +858,7 @@ public class APSPanel extends javax.swing.JFrame {
                 credentialsMenuItemActionPerformed(evt);
             }
         });
-        jMenu2.add(credentialsMenuItem);
+        jMenuSettings.add(credentialsMenuItem);
 
         jMenuItemDemoLive.setText("Demo or Live...");
         jMenuItemDemoLive.setToolTipText("Click to switch vending between Live and Demo");
@@ -757,7 +867,7 @@ public class APSPanel extends javax.swing.JFrame {
                 jMenuItemDemoLiveActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItemDemoLive);
+        jMenuSettings.add(jMenuItemDemoLive);
 
         jMenuItemServiceCharge.setText("Service Charge...");
         jMenuItemServiceCharge.setToolTipText("Add or edit amount charged to the customer for using the service");
@@ -766,9 +876,9 @@ public class APSPanel extends javax.swing.JFrame {
                 jMenuItemServiceChargeActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItemServiceCharge);
+        jMenuSettings.add(jMenuItemServiceCharge);
 
-        jMenuBar1.add(jMenu2);
+        jMenuBar1.add(jMenuSettings);
 
         setJMenuBar(jMenuBar1);
 
@@ -793,10 +903,11 @@ public class APSPanel extends javax.swing.JFrame {
 
     private void credentialsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_credentialsMenuItemActionPerformed
         String[] creds = vs.retrieveCredentials();
-        
+
         jTextFieldUsername.setText(creds[0]);
-        jTextFieldAuthCode.setText(creds[1]);
+        jTextFieldAuthCode.setText(creds[2]);
         jPasswordFieldCredentials.setText("");
+        jTextFieldMachineID.setText(vs.retrieveMachineID());
         jDialogCredentials.setVisible(true);
     }//GEN-LAST:event_credentialsMenuItemActionPerformed
 
@@ -853,6 +964,7 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldUsername.setText("");
         jPasswordFieldCredentials.setText("");
         jTextFieldAuthCode.setText("");
+        jTextFieldMachineID.setText("");
     }//GEN-LAST:event_jButtonClearCredentialsActionPerformed
 
     private void jButtonClearPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearPreviewActionPerformed
@@ -896,41 +1008,36 @@ public class APSPanel extends javax.swing.JFrame {
 
         if (buttonModel.equals(jRadioButtonDemo.getModel())) {    //if demo vend is selected
             vs.storeDemoLiveState(false);
+            vc.changeVendType(false);
         } else if (buttonModel.equals(jRadioButtonLive.getModel())) { //if live vend is selected
             vs.storeDemoLiveState(true);
+            vc.changeVendType(true);
         }
 
         jDialogDemoLive.setVisible(false);
     }//GEN-LAST:event_jButtonSaveDemoLive1ActionPerformed
 
     private void jButtonSaveCredentialsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveCredentialsActionPerformed
-        
+
         //upon clicking save button, if any of the fields are empty then show a 
         //warning message, else go ahead and save
-        if (jTextFieldUsername.getText().isEmpty() || jPasswordFieldCredentials.getPassword().length == 0 || jTextFieldAuthCode.getText().isEmpty()) {
+        if (
+                jTextFieldUsername.getText().isEmpty() || 
+                jPasswordFieldCredentials.getPassword().length == 0 || 
+                jTextFieldAuthCode.getText().isEmpty() || 
+                jTextFieldMachineID.getText().isEmpty()) {
             JOptionPane.showMessageDialog(jDialogCredentials, "Please fill in all fields!", "Warning: Empty fields", JOptionPane.ERROR_MESSAGE);
         } else {
             vs.storeCredentials(
                     jTextFieldUsername.getText(),
                     jPasswordFieldCredentials.getPassword(),
-                    jTextFieldAuthCode.getText()
+                    jTextFieldAuthCode.getText(),
+                    jTextFieldMachineID.getText()
             );
-            
+
             jDialogCredentials.setVisible(false);
         }
     }//GEN-LAST:event_jButtonSaveCredentialsActionPerformed
-
-    private void jTextFieldUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldUsernameActionPerformed
-        jButtonSaveCredentialsActionPerformed(evt);
-    }//GEN-LAST:event_jTextFieldUsernameActionPerformed
-
-    private void jPasswordFieldCredentialsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordFieldCredentialsActionPerformed
-        jButtonSaveCredentialsActionPerformed(evt);
-    }//GEN-LAST:event_jPasswordFieldCredentialsActionPerformed
-
-    private void jTextFieldAuthCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldAuthCodeActionPerformed
-        jButtonSaveCredentialsActionPerformed(evt);
-    }//GEN-LAST:event_jTextFieldAuthCodeActionPerformed
 
     private void jTextFieldServiceChargeKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldServiceChargeKeyTyped
         // TODO add your handling code here:
@@ -950,20 +1057,20 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItemServiceChargeActionPerformed
 
     private void jButtonSaveServiceChargeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveServiceChargeActionPerformed
-        
+
         //Validate what was typed
-        if(jTextFieldServiceCharge.getText().isEmpty()){    //if the text field is empty
+        if (jTextFieldServiceCharge.getText().isEmpty()) {    //if the text field is empty
             JOptionPane.showMessageDialog(
-                    jDialogServiceCharge, 
-                    "Service Charge cannot be blank.\nEnter an amount greater than or equal to zero", 
-                    "Warning: Blank Service Charge", 
+                    jDialogServiceCharge,
+                    "Service Charge cannot be blank.\nEnter an amount greater than or equal to zero",
+                    "Warning: Blank Service Charge",
                     JOptionPane.ERROR_MESSAGE
             );
-        } else{     //if not empty
+        } else {     //if not empty
             try {   //let's make sure it was a valid number
                 double amount = Double.parseDouble(jTextFieldServiceCharge.getText());
                 vs.storeServiceCharge(amount);
-                
+
                 jDialogServiceCharge.setVisible(false);
             } catch (NumberFormatException numberFormatException) {
                 JOptionPane.showMessageDialog(
@@ -979,6 +1086,89 @@ public class APSPanel extends javax.swing.JFrame {
     private void jTextFieldServiceChargeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldServiceChargeActionPerformed
         jButtonSaveServiceChargeActionPerformed(evt);
     }//GEN-LAST:event_jTextFieldServiceChargeActionPerformed
+
+    private void jButtonGetBalanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGetBalanceActionPerformed
+        boolean retry = false;
+
+        String result = "error";
+
+        do {
+
+            worker = new SwingWorker() {
+                @Override
+                protected String doInBackground() throws Exception {
+                    String balance = vc.getBalance();
+
+                    return balance;
+                }
+
+                @Override
+                protected void done() {
+                    jDialogLoading.setVisible(false);
+                    
+                }
+            };
+
+            worker.execute();
+
+            jDialogLoading.setVisible(true);
+
+            try {
+                result = worker.get();
+                
+                if(vc.isError(result)){
+                    retry = shouldRetry(vc.getErrorMessage(result));
+                } else{
+                    retry = false;
+                }
+            } catch (InterruptedException | ExecutionException | CancellationException ex) {
+                
+                if(ex.getCause() instanceof IOException){
+                    retry = shouldRetry("A Network Error Occurred!");
+                } else if(ex.getCause() instanceof InterruptedException){
+                    retry = shouldRetry("The current task was interrupted!");
+                } else if(ex.getCause() instanceof CancellationException){
+                    result = "The task was cancelled";
+                } else{
+                    retry = shouldRetry("Uknown Error!");
+                }
+            }
+        } while (retry);
+
+        jTextArea1.setText(result);
+    }//GEN-LAST:event_jButtonGetBalanceActionPerformed
+
+    private boolean shouldRetry(String erMessage) throws HeadlessException {
+        
+        int option = JOptionPane.showOptionDialog(
+                this, erMessage, "Retry?",
+                JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
+                null, null, null);
+        
+        return option == JOptionPane.YES_OPTION;
+    }
+
+    private void jButtonLoadingCancelTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoadingCancelTaskActionPerformed
+        worker.cancel(true);
+        
+        jDialogLoading.setVisible(false);
+    }//GEN-LAST:event_jButtonLoadingCancelTaskActionPerformed
+
+    private void jPasswordFieldCredentialsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordFieldCredentialsActionPerformed
+        jButtonSaveCredentialsActionPerformed(evt);
+    }//GEN-LAST:event_jPasswordFieldCredentialsActionPerformed
+
+    private void jTextFieldAuthCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldAuthCodeActionPerformed
+        jButtonSaveCredentialsActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldAuthCodeActionPerformed
+
+    private void jTextFieldUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldUsernameActionPerformed
+        jButtonSaveCredentialsActionPerformed(evt);
+    }//GEN-LAST:event_jTextFieldUsernameActionPerformed
+
+    private void jTextFieldMachineIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldMachineIDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldMachineIDActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1031,6 +1221,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCopyToken;
     private javax.swing.JButton jButtonGenerate;
     private javax.swing.JButton jButtonGetBalance;
+    private javax.swing.JButton jButtonLoadingCancelTask;
     private javax.swing.JButton jButtonPreviewVend;
     private javax.swing.JButton jButtonSaveCredentials;
     private javax.swing.JButton jButtonSaveDemoLive1;
@@ -1041,10 +1232,13 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonVendTrasactionRef;
     private javax.swing.JDialog jDialogCredentials;
     private javax.swing.JDialog jDialogDemoLive;
+    private javax.swing.JDialog jDialogLoading;
     private javax.swing.JDialog jDialogPreviewVend;
     private javax.swing.JDialog jDialogServiceCharge;
     private javax.swing.JDialog jDialogValidateMeterNum;
     private javax.swing.JLabel jLabelAuthCode;
+    private javax.swing.JLabel jLabelAuthCodeMAchineID;
+    private javax.swing.JLabel jLabelLoading;
     private javax.swing.JLabel jLabelPassword;
     private javax.swing.JLabel jLabelPreviewAmount;
     private javax.swing.JLabel jLabelPreviewMeterNum;
@@ -1052,27 +1246,31 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelServiceCharge;
     private javax.swing.JLabel jLabelUsername;
     private javax.swing.JLabel jLabelValidateMeterNum;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenuFile;
     private javax.swing.JMenuItem jMenuItemDemoLive;
     private javax.swing.JMenuItem jMenuItemServiceCharge;
+    private javax.swing.JMenu jMenuSettings;
     private javax.swing.JPanel jPanelControls;
     private javax.swing.JPanel jPanelCredentials;
     private javax.swing.JPanel jPanelCredentials2;
     private javax.swing.JPanel jPanelDemoLive;
     private javax.swing.JPanel jPanelDisplay;
+    private javax.swing.JPanel jPanelLoading;
     private javax.swing.JPanel jPanelValidateMeterNum;
     private javax.swing.JPanel jPanelValidateMeterNum1;
     private javax.swing.JPanel jPanellServiceCharge;
     private javax.swing.JPasswordField jPasswordFieldCredentials;
+    private javax.swing.JProgressBar jProgressBarLoading;
     private javax.swing.JRadioButton jRadioButtonDemo;
     private javax.swing.JRadioButton jRadioButtonLive;
     private javax.swing.JScrollPane jScrollPaneDisplayValues;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextFieldAuthCode;
+    private javax.swing.JTextField jTextFieldMachineID;
     private javax.swing.JTextField jTextFieldPreviewAmount;
     private javax.swing.JTextField jTextFieldPreviewMeterNum;
     private javax.swing.JTextField jTextFieldPreviewPhoneNum;

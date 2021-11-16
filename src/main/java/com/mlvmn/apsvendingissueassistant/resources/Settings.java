@@ -40,6 +40,8 @@ public class Settings {
     private static final String PASSWORD = "password";
     private static final String USERNAME = "username";
     private static final String SERVICE_CHARGE = "serviceCharge";
+    private static final String MACHINE_ID = "Machine_ID";
+    private static final String AUTHORIZATION_TOKEN = "authorization_token";
     
     /**
      * Constructor
@@ -109,7 +111,7 @@ public class Settings {
      * @return boolean, true for live vending and false for demo vending
      */
     public boolean retrieveDemoLiveState(){
-        return Boolean.valueOf(this.prop.getProperty(IS_LIVE));
+        return Boolean.valueOf(this.prop.getProperty(IS_LIVE, "true"));
     }
     
     /**
@@ -118,14 +120,21 @@ public class Settings {
      * @param username Username to access Access Power API
      * @param password Password to access Access Power API
      * @param authCode The authentication code to login
+     * @param machineID String characters representing the ID of the system that
+     *  is running this program
      */
-    public void storeCredentials(String username, char[] password, String authCode){
+    public void storeCredentials(String username, char[] password, String authCode, String machineID){
         //TODO Implement standard encryption and descryption here
         
         this.prop.setProperty(USERNAME, username);
         this.prop.setProperty(PASSWORD, new String(password));
         this.prop.setProperty(AUTHENTICATION_CODE, authCode);
+        this.prop.setProperty(MACHINE_ID, machineID);
         saveSettings();
+    }
+    
+    public String retrieveMachineID(){
+        return this.prop.getProperty(MACHINE_ID, "");
     }
         
     /**
@@ -135,10 +144,11 @@ public class Settings {
      * @return String array containing the credentials.
      */
     public String[] retrieveCredentials(){
-        //TODO Implement standard encryption and descryption here
+        //TODO Implement standard encryption and decryption here
         
         String[] creds = {
             this.prop.getProperty(USERNAME, ""), 
+            this.prop.getProperty(PASSWORD, ""),
             this.prop.getProperty(AUTHENTICATION_CODE, "")
         };
         
@@ -162,6 +172,24 @@ public class Settings {
      */
     public void storeServiceCharge(double amount) {
         this.prop.setProperty(SERVICE_CHARGE, String.valueOf(amount));
+        saveSettings();
+    }
+
+    /**
+     * This method retrieves the previously stored authorization token used to 
+     * authorise requests.
+     * @return String characters representing the authorization token.
+     */
+    public String retrieveAuthToken() {
+        return this.prop.getProperty(AUTHORIZATION_TOKEN, "");
+    }
+
+    /**
+     * This method stores the authorization token used to authorise requests.
+     * @param authToken
+     */
+    public void storeAuthToken(String authToken) {
+        this.prop.setProperty(AUTHORIZATION_TOKEN, authToken);
         saveSettings();
     }
     
