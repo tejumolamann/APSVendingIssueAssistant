@@ -12,6 +12,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -72,7 +73,7 @@ public final class VendControl {
     
     //This method handle obtaining the authorization code for all subsequent API 
     //calls
-    private JSONObject login() throws IOException, InterruptedException {
+    private void login() throws IOException, InterruptedException {
         String[] creds = Settings.getSettings().retrieveCredentials();
         
         //up - username and password
@@ -91,8 +92,6 @@ public final class VendControl {
             Settings.getSettings().storeAuthToken(jsonBody.getString("token"));
             authToken = jsonBody.getString("token");
         }
-        
-        return jsonBody;
     }
     
     /**
@@ -103,12 +102,55 @@ public final class VendControl {
      * @throws InterruptedException thrown if call to the API interrupted before 
      * the call could complete.
      */
-    public String getBalance() throws IOException, InterruptedException{
+    public String getBalance() throws IOException, InterruptedException, JSONException{
         
-        HttpRequest req = anApi.balance(authToken);
-        HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+        String rawBal = doWorkCheckLogin(anApi.balance(authToken));            
         
-        return res.body();
+        return rawBal;
+    }
+
+    //This private method takes care of repetitive work ensuring that each 
+    //request call is authorised. If a response to a request is expired or 
+    //missing an authorization token it calls the login method to obtain a new 
+    //token for subsequent requests till the token expires.
+    private String doWorkCheckLogin(HttpRequest req) throws InterruptedException, IOException {
+        
+        String rawString = "";
+        
+        boolean retryRequest;
+        
+        do {
+            
+            HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+            
+            rawString = res.body();
+            
+            //if response message is an error message
+            if(isError(rawString)){
+                
+                //Check if it has to do with authorization
+                if(
+                        "invalid session token. please login first".equals(getErrorMessage(rawString)) || 
+                        "session token header not found".equals(getErrorMessage(rawString)))
+                {
+                    login();
+                    retryRequest = true;
+                }
+                
+                //if the error does not have to do authorization end the loop to 
+                //pass the message to be handled elsewhere
+                else{
+                    retryRequest = false;
+                }
+            } 
+            
+            //if there are no errors, end the loop
+            else {
+                retryRequest = false;
+            }
+        } while (retryRequest);
+        
+        return rawString;
     }
 
     /**
