@@ -66,5 +66,54 @@ public class DemoApi extends Api{
         
         return builder.build();
     }
+
+    @Override
+    public HttpRequest validateMeterNumber(String accessCode, String meterNum) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+        
+        builder.uri(URI.create(HOST_DEMO.concat("/api/meters/search")));
+        builder.setHeader(AUTHORIZATION, accessCode);
+        builder.setHeader(CONTENT_TYPE, APPLICATION_JSON);
+        
+        JSONObject body = new JSONObject();
+        body.put(METER_NO, meterNum);
+        
+        builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
+        
+        return builder.build();
+        
+    }
+
+    @Override
+    public HttpRequest newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+        
+        builder.uri(URI.create(HOST_DEMO.concat("/api/transactions/new")));
+        builder.setHeader(AUTHORIZATION, accessCode);
+        builder.setHeader(CONTENT_TYPE, APPLICATION_JSON);
+        
+        JSONObject body = new JSONObject();
+        body.put(METER_NO, meterNum);
+        body.put("amount", amount);
+        body.put("gsmNo", phoneNum);
+        
+        builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
+        
+        return builder.build();
+        
+    }
+
+    @Override
+    public HttpRequest vendTransaction(String accessCode, String transRef) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+        
+        builder.uri(URI.create(HOST_DEMO.concat("/api/transactions/pay")));
+        builder.header(AUTHORIZATION, accessCode);
+        builder.header(CONTENT_TYPE, APPLICATION_JSON);
+        
+        builder.POST(HttpRequest.BodyPublishers.ofString(new JSONObject().put("transactionReference", transRef).toString()));
+        
+        return builder.build();
+    }
     
 }

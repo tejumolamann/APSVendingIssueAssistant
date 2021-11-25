@@ -6,6 +6,7 @@
 package com.mlvmn.apsvendingissueassistant.panel;
 
 import com.mlvmn.apsvendingissueassistant.engine.VendControl;
+import com.mlvmn.apsvendingissueassistant.resources.Receipt;
 import com.mlvmn.apsvendingissueassistant.resources.Settings;
 import java.awt.HeadlessException;
 import java.io.IOException;
@@ -16,6 +17,8 @@ import java.util.logging.Logger;
 import javax.swing.ButtonModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -32,7 +35,7 @@ public class APSPanel extends javax.swing.JFrame {
      * For saving and retrieving vending settings
      */
     private final Settings vs;
-    
+
     private SwingWorker<String, Void> worker;
 
     /**
@@ -163,6 +166,11 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonValidateMeterNum.setText("Validate");
         jButtonValidateMeterNum.setToolTipText("Click to validate meter number");
         jButtonValidateMeterNum.setEnabled(false);
+        jButtonValidateMeterNum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonValidateMeterNumActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelValidateMeterNumLayout = new javax.swing.GroupLayout(jPanelValidateMeterNum);
         jPanelValidateMeterNum.setLayout(jPanelValidateMeterNumLayout);
@@ -220,7 +228,6 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogCredentials.setLocation(new java.awt.Point(0, 0));
         jDialogCredentials.setMinimumSize(new java.awt.Dimension(400, 350));
         jDialogCredentials.setModal(true);
-        jDialogCredentials.setPreferredSize(new java.awt.Dimension(400, 500));
         jDialogCredentials.setResizable(false);
         jDialogCredentials.setSize(new java.awt.Dimension(400, 410));
         jDialogCredentials.setLocationRelativeTo(null);
@@ -933,6 +940,8 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonValidateMeterNum.setText("Validate");
         jButtonValidateMeterNum.setToolTipText("Click to validate meter number");
         jDialogValidateMeterNum.setTitle("Validtate Meter Number");
+        
+        jTextFieldValidateMeterNum.setText("");
 
         jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonValidateActionPerformed
@@ -1021,11 +1030,10 @@ public class APSPanel extends javax.swing.JFrame {
 
         //upon clicking save button, if any of the fields are empty then show a 
         //warning message, else go ahead and save
-        if (
-                jTextFieldUsername.getText().isEmpty() || 
-                jPasswordFieldCredentials.getPassword().length == 0 || 
-                jTextFieldAuthCode.getText().isEmpty() || 
-                jTextFieldMachineID.getText().isEmpty()) {
+        if (jTextFieldUsername.getText().isEmpty()
+                || jPasswordFieldCredentials.getPassword().length == 0
+                || jTextFieldAuthCode.getText().isEmpty()
+                || jTextFieldMachineID.getText().isEmpty()) {
             JOptionPane.showMessageDialog(jDialogCredentials, "Please fill in all fields!", "Warning: Empty fields", JOptionPane.ERROR_MESSAGE);
         } else {
             vs.storeCredentials(
@@ -1088,26 +1096,53 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldServiceChargeActionPerformed
 
     private void jButtonGetBalanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGetBalanceActionPerformed
-        boolean retry = false;
+        String result = backgroundWorker(1, null);
 
+        Receipt receipt = new Receipt(new JSONObject(result));
+        result = receipt.printBalanceToScreen();
+
+        jTextArea1.setText(result);
+    }//GEN-LAST:event_jButtonGetBalanceActionPerformed
+
+    private String backgroundWorker(int taskID, Object payLoad) throws HeadlessException, JSONException {
+        boolean retry = false;
         String result = "error";
 
         do {
 
-            worker = new SwingWorker() {
-                @Override
-                protected String doInBackground() throws Exception {
-                    String balance = vc.getBalance();
+            switch (taskID) {
+                case 1:
+                    worker = new SwingWorker() {
+                        @Override
+                        protected String doInBackground() throws Exception {
+                            String balance = vc.getBalance();
 
-                    return balance;
-                }
+                            return balance;
+                        }
 
-                @Override
-                protected void done() {
-                    jDialogLoading.setVisible(false);
-                    
-                }
-            };
+                        @Override
+                        protected void done() {
+                            jDialogLoading.setVisible(false);
+
+                        }
+                    };
+                    break;
+                case 2:
+                    worker = new SwingWorker() {
+                        @Override
+                        protected String doInBackground() throws Exception {
+                            String meterDetails = vc.validateMeterNumber(payLoad.toString());
+
+                            return meterDetails;
+                        }
+
+                        @Override
+                        protected void done() {
+                            jDialogLoading.setVisible(false);
+                        }
+                    };
+
+            }
 
             worker.execute();
 
@@ -1115,42 +1150,43 @@ public class APSPanel extends javax.swing.JFrame {
 
             try {
                 result = worker.get();
-                
-                if(vc.isError(result)){
+
+                if (vc.isError(result)) {
                     retry = shouldRetry(vc.getErrorMessage(result));
-                } else{
+                } else {
                     retry = false;
+
                 }
             } catch (InterruptedException | ExecutionException | CancellationException ex) {
-                
-                if(ex.getCause() instanceof IOException){
+
+                if (ex.getCause() instanceof IOException) {
                     retry = shouldRetry("A Network Error Occurred!");
-                } else if(ex.getCause() instanceof InterruptedException){
+                } else if (ex.getCause() instanceof InterruptedException) {
                     retry = shouldRetry("The current task was interrupted!");
-                } else if(ex.getCause() instanceof CancellationException){
+                } else if (ex.getCause() instanceof CancellationException) {
                     result = "The task was cancelled";
-                } else{
+                } else {
                     retry = shouldRetry("Uknown Error!");
                 }
             }
         } while (retry);
 
-        jTextArea1.setText(result);
-    }//GEN-LAST:event_jButtonGetBalanceActionPerformed
+        return result;
+    }
 
     private boolean shouldRetry(String erMessage) throws HeadlessException {
-        
+
         int option = JOptionPane.showOptionDialog(
                 this, erMessage, "Retry?",
                 JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
                 null, null, null);
-        
+
         return option == JOptionPane.YES_OPTION;
     }
 
     private void jButtonLoadingCancelTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoadingCancelTaskActionPerformed
         worker.cancel(true);
-        
+
         jDialogLoading.setVisible(false);
     }//GEN-LAST:event_jButtonLoadingCancelTaskActionPerformed
 
@@ -1169,6 +1205,16 @@ public class APSPanel extends javax.swing.JFrame {
     private void jTextFieldMachineIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldMachineIDActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldMachineIDActionPerformed
+
+    private void jButtonValidateMeterNumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValidateMeterNumActionPerformed
+        String meterNum = jTextFieldValidateMeterNum.getText();
+        
+        jDialogValidateMeterNum.setVisible(false);
+        
+        String details = backgroundWorker(2, meterNum);
+        
+        jTextArea1.setText(details);
+    }//GEN-LAST:event_jButtonValidateMeterNumActionPerformed
 
     /**
      * @param args the command line arguments

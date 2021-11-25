@@ -125,6 +125,9 @@
                 <Property name="toolTipText" type="java.lang.String" value="Click to validate meter number"/>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonValidateMeterNumActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -141,9 +144,6 @@
           <Dimension value="[400, 350]"/>
         </Property>
         <Property name="modal" type="boolean" value="true"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[400, 500]"/>
-        </Property>
         <Property name="resizable" type="boolean" value="false"/>
         <Property name="size" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[400, 410]"/>

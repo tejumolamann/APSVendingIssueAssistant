@@ -108,6 +108,24 @@ public final class VendControl {
         
         return rawBal;
     }
+    
+    public String validateMeterNumber(String meterNum) throws InterruptedException, IOException, JSONException{
+        String meterDetails = doWorkCheckLogin(anApi.validateMeterNumber(authToken, meterNum));
+        
+        return meterDetails;
+    }
+    
+    public String newTransaction(String meterNum, double amount, String phoneNum) throws InterruptedException, IOException, JSONException{
+        String transaction = doWorkCheckLogin(anApi.newTransaction(authToken, meterNum, amount, phoneNum));
+        
+        return transaction;
+    }
+    
+    public String vendTransaction(String transRef) throws InterruptedException, IOException, JSONException{
+        String vend = doWorkCheckLogin(anApi.vendTransaction(authToken, transRef));
+        
+        return vend;
+    }
 
     //This private method takes care of repetitive work ensuring that each 
     //request call is authorised. If a response to a request is expired or 
@@ -131,7 +149,8 @@ public final class VendControl {
                 //Check if it has to do with authorization
                 if(
                         "invalid session token. please login first".equals(getErrorMessage(rawString)) || 
-                        "session token header not found".equals(getErrorMessage(rawString)))
+                        "session token header not found".equals(getErrorMessage(rawString)) ||
+                                "session token has expired. please login".equals(getErrorMessage(rawString)))
                 {
                     login();
                     retryRequest = true;
