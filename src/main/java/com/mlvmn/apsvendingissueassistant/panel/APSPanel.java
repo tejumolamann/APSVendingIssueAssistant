@@ -1162,6 +1162,7 @@ public class APSPanel extends javax.swing.JFrame {
                         }
                     };
                     break;
+                    
                 case 2:
                     worker = new SwingWorker() {
                         @Override
@@ -1210,7 +1211,7 @@ public class APSPanel extends javax.swing.JFrame {
                     retry = false;
 
                 }
-            } catch (InterruptedException | ExecutionException | CancellationException ex) {
+            } catch (InterruptedException | ExecutionException | CancellationException | JSONException ex) {
 
                 if (ex.getCause() instanceof IOException) {
                     retry = shouldRetry("A Network Error Occurred!");
@@ -1218,6 +1219,8 @@ public class APSPanel extends javax.swing.JFrame {
                     retry = shouldRetry("The current task was interrupted!");
                 } else if (ex.getCause() instanceof CancellationException) {
                     result = "The task was cancelled";
+                } else if (ex.getCause() instanceof JSONException){
+                    retry = shouldRetry("Access Power did not communicate in the proper way!");
                 } else {
                     retry = shouldRetry("Uknown Error!");
                 }
@@ -1280,6 +1283,8 @@ public class APSPanel extends javax.swing.JFrame {
             jTextFieldPreviewPhoneNum.getText()
         };
         
+        jDialogPreviewVend.setVisible(false);
+        
         String transaction = backgroundWorker(3, data);
         
         Receipt receipt = new Receipt(new JSONObject(transaction));
@@ -1295,7 +1300,7 @@ public class APSPanel extends javax.swing.JFrame {
         numbersOnlyTextField(evt);
     }//GEN-LAST:event_jTextFieldPreviewMeterNumKeyTyped
 
-    public void enableGenerateButton() {
+    private void enableGenerateButton() {
         String meterNumber = jTextFieldPreviewMeterNum.getText();
         String amount = jTextFieldPreviewAmount.getText();
         String phoneNumber = jTextFieldPreviewPhoneNum.getText();

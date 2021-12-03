@@ -186,11 +186,15 @@ public final class VendControl {
         
         boolean status;
         
-        if(jsonRes.has("isError")){
-            
-            status = jsonRes.getBoolean("isError");
-        } else{
-            status = false;
+        try {
+            if (jsonRes.has("isError")) {
+                
+                status = jsonRes.getBoolean("isError");
+            } else {
+                status = false;
+            }
+        } catch (JSONException jSONException) {
+            status = true;
         }
         
         return status;
