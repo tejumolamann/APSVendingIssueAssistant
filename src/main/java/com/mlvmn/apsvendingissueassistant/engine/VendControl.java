@@ -131,7 +131,9 @@ public final class VendControl {
     //request call is authorised. If a response to a request is expired or 
     //missing an authorization token it calls the login method to obtain a new 
     //token for subsequent requests till the token expires.
-    private String doWorkCheckLogin(HttpRequest req) throws InterruptedException, IOException {
+    private String doWorkCheckLogin(HttpRequest.Builder builder) throws InterruptedException, IOException {
+        
+        HttpResponse<String> res;
         
         String rawString = "";
         
@@ -139,7 +141,7 @@ public final class VendControl {
         
         do {
             
-            HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+            res = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
             
             rawString = res.body();
             
@@ -153,6 +155,7 @@ public final class VendControl {
                                 "session token has expired. please login".equals(getErrorMessage(rawString)))
                 {
                     login();
+                    builder.setHeader("Authorization", authToken);
                     retryRequest = true;
                 }
                 

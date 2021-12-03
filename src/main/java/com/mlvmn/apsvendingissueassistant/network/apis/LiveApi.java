@@ -25,22 +25,22 @@ public class LiveApi extends Api{
     }
 
     @Override
-    public HttpRequest balance(String accessCode) {
+    public HttpRequest.Builder balance(String accessCode) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public HttpRequest validateMeterNumber(String accessCode, String meterNum) {
+    public HttpRequest.Builder validateMeterNumber(String accessCode, String meterNum) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public HttpRequest newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
+    public HttpRequest.Builder newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public HttpRequest vendTransaction(String accessCode, String transRef) {
+    public HttpRequest.Builder vendTransaction(String accessCode, String transRef) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

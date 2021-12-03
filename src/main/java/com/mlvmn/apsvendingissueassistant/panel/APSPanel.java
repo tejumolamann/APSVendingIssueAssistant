@@ -9,6 +9,7 @@ import com.mlvmn.apsvendingissueassistant.engine.VendControl;
 import com.mlvmn.apsvendingissueassistant.resources.Receipt;
 import com.mlvmn.apsvendingissueassistant.resources.Settings;
 import java.awt.HeadlessException;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -484,6 +485,11 @@ public class APSPanel extends javax.swing.JFrame {
         jLabelPreviewMeterNum.setText("Enter a meter number");
 
         jTextFieldPreviewMeterNum.setToolTipText("Type in a meter number");
+        jTextFieldPreviewMeterNum.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldPreviewMeterNumKeyTyped(evt);
+            }
+        });
 
         jButtonClearPreview.setText("Clear");
         jButtonClearPreview.setToolTipText("Clear field");
@@ -503,14 +509,29 @@ public class APSPanel extends javax.swing.JFrame {
 
         jButtonGenerate.setText("Generate");
         jButtonGenerate.setToolTipText("Click to validate meter number");
+        jButtonGenerate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGenerateActionPerformed(evt);
+            }
+        });
 
         jLabelPreviewAmount.setText("Enter topup amount");
 
         jTextFieldPreviewAmount.setToolTipText("Enter an amount");
+        jTextFieldPreviewAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldPreviewAmountKeyTyped(evt);
+            }
+        });
 
         jLabelPreviewPhoneNum.setText("Enter phone number");
 
         jTextFieldPreviewPhoneNum.setToolTipText("Type in a phone number");
+        jTextFieldPreviewPhoneNum.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldPreviewPhoneNumKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelValidateMeterNum1Layout = new javax.swing.GroupLayout(jPanelValidateMeterNum1);
         jPanelValidateMeterNum1.setLayout(jPanelValidateMeterNum1Layout);
@@ -942,6 +963,7 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogValidateMeterNum.setTitle("Validtate Meter Number");
         
         jTextFieldValidateMeterNum.setText("");
+        jTextFieldValidateMeterNum.requestFocusInWindow();
 
         jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonValidateActionPerformed
@@ -980,6 +1002,10 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldPreviewMeterNum.setText("");
         jTextFieldPreviewAmount.setText("");
         jTextFieldPreviewPhoneNum.setText("");
+        
+        jButtonGenerate.setEnabled(false);
+        
+        jTextFieldPreviewMeterNum.requestFocusInWindow();
     }//GEN-LAST:event_jButtonClearPreviewActionPerformed
 
     private void jButtonCancelPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelPreviewActionPerformed
@@ -989,6 +1015,15 @@ public class APSPanel extends javax.swing.JFrame {
     private void jButtonPreviewVendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPreviewVendActionPerformed
         jButtonGenerate.setText("Generate");
         jDialogPreviewVend.setTitle("Preview Vend/Transaction Reference");
+        
+        jTextFieldPreviewMeterNum.setText("");
+        jTextFieldPreviewAmount.setText("");
+        jTextFieldPreviewPhoneNum.setText("");
+        
+        jButtonGenerate.setEnabled(false);
+        
+        jTextFieldPreviewMeterNum.requestFocusInWindow();
+        
         jDialogPreviewVend.setVisible(true);
     }//GEN-LAST:event_jButtonPreviewVendActionPerformed
 
@@ -1141,6 +1176,24 @@ public class APSPanel extends javax.swing.JFrame {
                             jDialogLoading.setVisible(false);
                         }
                     };
+                    break;
+                    
+                case 3:
+                    worker = new SwingWorker(){
+                        @Override
+                        protected String doInBackground() throws Exception{
+                            String [] data = (String[]) payLoad;
+                            
+                            String transaction = vc.newTransaction(data[0], Double.parseDouble(data[1]), data[2]);
+                            
+                            return transaction;
+                        }
+                        
+                        @Override
+                        protected void done() {
+                            jDialogLoading.setVisible(false);
+                        }
+                    };
 
             }
 
@@ -1213,8 +1266,92 @@ public class APSPanel extends javax.swing.JFrame {
         
         String details = backgroundWorker(2, meterNum);
         
+        Receipt receipt = new Receipt(new JSONObject(details));
+        
+        details = receipt.printMeterDetailsToScreen();
+        
         jTextArea1.setText(details);
     }//GEN-LAST:event_jButtonValidateMeterNumActionPerformed
+
+    private void jButtonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateActionPerformed
+        String [] data = {
+            jTextFieldPreviewMeterNum.getText(), 
+            jTextFieldPreviewAmount.getText(), 
+            jTextFieldPreviewPhoneNum.getText()
+        };
+        
+        String transaction = backgroundWorker(3, data);
+        
+        Receipt receipt = new Receipt(new JSONObject(transaction));
+        
+        transaction = receipt.printTransactionToScreen();
+        
+        jTextArea1.setText(transaction);
+    }//GEN-LAST:event_jButtonGenerateActionPerformed
+
+    private void jTextFieldPreviewMeterNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewMeterNumKeyTyped
+        enableGenerateButton();
+        
+        numbersOnlyTextField(evt);
+    }//GEN-LAST:event_jTextFieldPreviewMeterNumKeyTyped
+
+    public void enableGenerateButton() {
+        String meterNumber = jTextFieldPreviewMeterNum.getText();
+        String amount = jTextFieldPreviewAmount.getText();
+        String phoneNumber = jTextFieldPreviewPhoneNum.getText();
+        
+        if(!meterNumber.isBlank() && !meterNumber.isEmpty() &&
+                !amount.isBlank() && !amount.isEmpty() &&
+                !phoneNumber.isBlank() && !phoneNumber.isEmpty())
+        {
+            jButtonGenerate.setEnabled(true);
+        }
+    }
+
+    private void jTextFieldPreviewAmountKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewAmountKeyTyped
+        amountOnlyTextField(evt);
+        
+        enableGenerateButton();
+    }//GEN-LAST:event_jTextFieldPreviewAmountKeyTyped
+
+    /**
+     * This is a method that forces only valid amount to be typed in.
+     */
+    private void amountOnlyTextField(KeyEvent evt) {
+        javax.swing.JTextField jtf = (javax.swing.JTextField) evt.getComponent();
+        char keyChar = evt.getKeyChar();
+        if(keyChar >= '0' && keyChar <= '9' ||
+                keyChar == KeyEvent.VK_BACK_SPACE || keyChar == KeyEvent.VK_DELETE ||
+                keyChar == KeyEvent.VK_PERIOD)
+        {
+            jtf.setEditable(true);
+        } else{
+            jtf.setEditable(false);
+        }
+    }
+
+    private void jTextFieldPreviewPhoneNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewPhoneNumKeyTyped
+        numbersOnlyTextField(evt);
+        
+        enableGenerateButton();
+    }//GEN-LAST:event_jTextFieldPreviewPhoneNumKeyTyped
+
+    /**
+     * This method ensures only numbers are typed into a text field. It takes a 
+     * KeyEvent listener as an argument and the event's text field will accept 
+     * numbers only.
+     */
+    private void numbersOnlyTextField(KeyEvent evt) {
+        javax.swing.JTextField jtf = (javax.swing.JTextField) evt.getComponent();
+        char keyChar = evt.getKeyChar();
+        if(keyChar >= '0' && keyChar <= '9' ||
+                keyChar == KeyEvent.VK_BACK_SPACE || keyChar == KeyEvent.VK_DELETE)
+        {
+            jtf.setEditable(true);
+        } else{
+            jtf.setEditable(false);
+        }
+    }
 
     /**
      * @param args the command line arguments

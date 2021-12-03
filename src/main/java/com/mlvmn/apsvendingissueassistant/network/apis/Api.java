@@ -38,7 +38,7 @@ public abstract class Api {
      * @param accessCode
      * @return HttpRequest object
      */
-    abstract public HttpRequest balance(String accessCode);
+    abstract public HttpRequest.Builder balance(String accessCode);
     
     /**
      * An abstract method that defines the behaviour for validating meter 
@@ -48,7 +48,7 @@ public abstract class Api {
      * @param meterNum String, meter number to check for its correctness
      * @return HttpRequest object for validating meter numbers
      */
-    abstract public HttpRequest validateMeterNumber(String accessCode, String meterNum);
+    abstract public HttpRequest.Builder validateMeterNumber(String accessCode, String meterNum);
     
     /**
      * This method ensures that implementing methods create an HttpRequest object
@@ -60,7 +60,7 @@ public abstract class Api {
      * @param phoneNum String, the customer's phone number (compulsory)
      * @return HttpRequest object to create new transaction
      */
-    abstract public HttpRequest newTransaction(String accessCode, String meterNum, double amount, String phoneNum);
+    abstract public HttpRequest.Builder newTransaction(String accessCode, String meterNum, double amount, String phoneNum);
     
     /**
      * Abstract method that represents the actual vend.
@@ -69,6 +69,6 @@ public abstract class Api {
      * is obtained from the successful response message for new transaction
      * @return HttpRequest object to be used with a client to perform the vend.
      */
-    abstract public HttpRequest vendTransaction(String accessCode, String transRef);
+    abstract public HttpRequest.Builder vendTransaction(String accessCode, String transRef);
     
 }

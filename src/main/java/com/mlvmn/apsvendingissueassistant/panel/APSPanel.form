@@ -613,6 +613,9 @@
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Type in a meter number"/>
               </Properties>
+              <Events>
+                <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTextFieldPreviewMeterNumKeyTyped"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="jButtonClearPreview">
               <Properties>
@@ -637,6 +640,9 @@
                 <Property name="text" type="java.lang.String" value="Generate"/>
                 <Property name="toolTipText" type="java.lang.String" value="Click to validate meter number"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonGenerateActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabelPreviewAmount">
               <Properties>
@@ -647,6 +653,9 @@
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Enter an amount"/>
               </Properties>
+              <Events>
+                <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTextFieldPreviewAmountKeyTyped"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabelPreviewPhoneNum">
               <Properties>
@@ -657,6 +666,9 @@
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Type in a phone number"/>
               </Properties>
+              <Events>
+                <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTextFieldPreviewPhoneNumKeyTyped"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

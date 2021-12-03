@@ -56,7 +56,7 @@ public class DemoApi extends Api{
      * @return HttpRequest object
      */
     @Override
-    public HttpRequest balance(String accessCode) {
+    public HttpRequest.Builder balance(String accessCode) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_DEMO.concat("/api/wallet/balance")));
@@ -64,11 +64,11 @@ public class DemoApi extends Api{
         builder.setHeader(CONTENT_TYPE, APPLICATION_JSON);
         builder.GET();
         
-        return builder.build();
+        return builder;
     }
 
     @Override
-    public HttpRequest validateMeterNumber(String accessCode, String meterNum) {
+    public HttpRequest.Builder validateMeterNumber(String accessCode, String meterNum) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_DEMO.concat("/api/meters/search")));
@@ -80,12 +80,12 @@ public class DemoApi extends Api{
         
         builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
-        return builder.build();
+        return builder;
         
     }
 
     @Override
-    public HttpRequest newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
+    public HttpRequest.Builder newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_DEMO.concat("/api/transactions/new")));
@@ -99,12 +99,12 @@ public class DemoApi extends Api{
         
         builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
-        return builder.build();
+        return builder;
         
     }
 
     @Override
-    public HttpRequest vendTransaction(String accessCode, String transRef) {
+    public HttpRequest.Builder vendTransaction(String accessCode, String transRef) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_DEMO.concat("/api/transactions/pay")));
@@ -113,7 +113,7 @@ public class DemoApi extends Api{
         
         builder.POST(HttpRequest.BodyPublishers.ofString(new JSONObject().put("transactionReference", transRef).toString()));
         
-        return builder.build();
+        return builder;
     }
     
 }
