@@ -9,6 +9,9 @@ import com.mlvmn.apsvendingissueassistant.engine.VendControl;
 import com.mlvmn.apsvendingissueassistant.resources.Receipt;
 import com.mlvmn.apsvendingissueassistant.resources.Settings;
 import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.concurrent.CancellationException;
@@ -809,6 +812,11 @@ public class APSPanel extends javax.swing.JFrame {
         });
 
         jButtonCopyToken.setText("Copy Token");
+        jButtonCopyToken.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCopyTokenActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelControlsLayout = new javax.swing.GroupLayout(jPanelControls);
         jPanelControls.setLayout(jPanelControlsLayout);
@@ -961,7 +969,7 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonValidateMeterNum.setText("Validate");
         jButtonValidateMeterNum.setToolTipText("Click to validate meter number");
         jDialogValidateMeterNum.setTitle("Validtate Meter Number");
-        
+
         jTextFieldValidateMeterNum.setText("");
         jTextFieldValidateMeterNum.requestFocusInWindow();
 
@@ -1002,9 +1010,9 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldPreviewMeterNum.setText("");
         jTextFieldPreviewAmount.setText("");
         jTextFieldPreviewPhoneNum.setText("");
-        
+
         jButtonGenerate.setEnabled(false);
-        
+
         jTextFieldPreviewMeterNum.requestFocusInWindow();
     }//GEN-LAST:event_jButtonClearPreviewActionPerformed
 
@@ -1015,21 +1023,30 @@ public class APSPanel extends javax.swing.JFrame {
     private void jButtonPreviewVendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPreviewVendActionPerformed
         jButtonGenerate.setText("Generate");
         jDialogPreviewVend.setTitle("Preview Vend/Transaction Reference");
-        
+
         jTextFieldPreviewMeterNum.setText("");
         jTextFieldPreviewAmount.setText("");
         jTextFieldPreviewPhoneNum.setText("");
-        
+
         jButtonGenerate.setEnabled(false);
-        
+
         jTextFieldPreviewMeterNum.requestFocusInWindow();
-        
+
         jDialogPreviewVend.setVisible(true);
     }//GEN-LAST:event_jButtonPreviewVendActionPerformed
 
     private void jButtonVendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVendActionPerformed
         jButtonGenerate.setText("Vend");
         jDialogPreviewVend.setTitle("Vend Meter");
+
+        jTextFieldPreviewMeterNum.setText("");
+        jTextFieldPreviewAmount.setText("");
+        jTextFieldPreviewPhoneNum.setText("");
+
+        jButtonGenerate.setEnabled(false);
+
+        jTextFieldPreviewMeterNum.requestFocusInWindow();
+
         jDialogPreviewVend.setVisible(true);
     }//GEN-LAST:event_jButtonVendActionPerformed
 
@@ -1038,6 +1055,9 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonValidateMeterNum.setText("Vend");
         jButtonValidateMeterNum.setToolTipText("Click to vend transaction reference");
         jDialogValidateMeterNum.setTitle("Vend Transaction Reference");
+
+        jTextFieldValidateMeterNum.setText("");
+
         jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonVendTrasactionRefActionPerformed
 
@@ -1133,15 +1153,18 @@ public class APSPanel extends javax.swing.JFrame {
     private void jButtonGetBalanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGetBalanceActionPerformed
         String result = backgroundWorker(1, null);
 
-        Receipt receipt = new Receipt(new JSONObject(result));
-        result = receipt.printBalanceToScreen();
+        try {
+            Receipt receipt = new Receipt(new JSONObject(result));
+            result = receipt.printBalanceToScreen();
+        } catch (JSONException jSONException) {
+        }
 
         jTextArea1.setText(result);
     }//GEN-LAST:event_jButtonGetBalanceActionPerformed
 
     private String backgroundWorker(int taskID, Object payLoad) throws HeadlessException, JSONException {
         boolean retry = false;
-        String result = "error";
+        String result = "";
 
         do {
 
@@ -1162,7 +1185,7 @@ public class APSPanel extends javax.swing.JFrame {
                         }
                     };
                     break;
-                    
+
                 case 2:
                     worker = new SwingWorker() {
                         @Override
@@ -1178,23 +1201,42 @@ public class APSPanel extends javax.swing.JFrame {
                         }
                     };
                     break;
-                    
+
                 case 3:
-                    worker = new SwingWorker(){
+                    worker = new SwingWorker() {
                         @Override
-                        protected String doInBackground() throws Exception{
-                            String [] data = (String[]) payLoad;
-                            
+                        protected String doInBackground() throws Exception {
+                            String[] data = (String[]) payLoad;
+
                             String transaction = vc.newTransaction(data[0], Double.parseDouble(data[1]), data[2]);
-                            
+
                             return transaction;
                         }
-                        
+
                         @Override
                         protected void done() {
                             jDialogLoading.setVisible(false);
                         }
                     };
+                    break;
+
+                case 4:
+                    worker = new SwingWorker() {
+                        @Override
+                        protected String doInBackground() throws Exception {
+                            String transRef = payLoad.toString();
+
+                            String paidTrans = vc.vendTransaction(transRef);
+
+                            return paidTrans;
+                        }
+
+                        @Override
+                        protected void done() {
+                            jDialogLoading.setVisible(false);
+                        }
+                    };
+                    break;
 
             }
 
@@ -1219,7 +1261,7 @@ public class APSPanel extends javax.swing.JFrame {
                     retry = shouldRetry("The current task was interrupted!");
                 } else if (ex.getCause() instanceof CancellationException) {
                     result = "The task was cancelled";
-                } else if (ex.getCause() instanceof JSONException){
+                } else if (ex.getCause() instanceof JSONException) {
                     retry = shouldRetry("Access Power did not communicate in the proper way!");
                 } else {
                     retry = shouldRetry("Uknown Error!");
@@ -1264,39 +1306,59 @@ public class APSPanel extends javax.swing.JFrame {
 
     private void jButtonValidateMeterNumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValidateMeterNumActionPerformed
         String meterNum = jTextFieldValidateMeterNum.getText();
-        
+
         jDialogValidateMeterNum.setVisible(false);
-        
-        String details = backgroundWorker(2, meterNum);
-        
-        Receipt receipt = new Receipt(new JSONObject(details));
-        
-        details = receipt.printMeterDetailsToScreen();
-        
-        jTextArea1.setText(details);
+
+        if (jButtonValidateMeterNum.getText().equals("Validate")) {
+            String details = backgroundWorker(2, meterNum);
+
+            Receipt receipt = new Receipt(new JSONObject(details));
+
+            details = receipt.printMeterDetailsToScreen();
+
+            jTextArea1.setText(details);
+        } else {
+            String vendDetails = backgroundWorker(4, meterNum);
+
+            Receipt receipt = new Receipt(new JSONObject(vendDetails));
+
+            vendDetails = receipt.printVendToScreen();
+
+            jTextArea1.setText(vendDetails);
+        }
     }//GEN-LAST:event_jButtonValidateMeterNumActionPerformed
 
     private void jButtonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateActionPerformed
-        String [] data = {
-            jTextFieldPreviewMeterNum.getText(), 
-            jTextFieldPreviewAmount.getText(), 
+        String[] data = {
+            jTextFieldPreviewMeterNum.getText(),
+            jTextFieldPreviewAmount.getText(),
             jTextFieldPreviewPhoneNum.getText()
         };
-        
+
         jDialogPreviewVend.setVisible(false);
-        
-        String transaction = backgroundWorker(3, data);
-        
-        Receipt receipt = new Receipt(new JSONObject(transaction));
-        
-        transaction = receipt.printTransactionToScreen();
-        
+
+        String transaction = null;
+        if (jButtonGenerate.getText().equals("Generate")) {
+            transaction = backgroundWorker(3, data);
+
+            Receipt receipt = new Receipt(new JSONObject(transaction));
+
+            transaction = receipt.printTransactionToScreen();
+        } else {
+            String createdTransaction = backgroundWorker(3, data);
+            JSONObject jsonTrans = new JSONObject(createdTransaction);
+            transaction = backgroundWorker(4, jsonTrans.getString("transactionReference"));
+
+            Receipt receipt = new Receipt(new JSONObject(transaction));
+            transaction = receipt.printVendToScreen();
+        }
+
         jTextArea1.setText(transaction);
     }//GEN-LAST:event_jButtonGenerateActionPerformed
 
     private void jTextFieldPreviewMeterNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewMeterNumKeyTyped
         enableGenerateButton();
-        
+
         numbersOnlyTextField(evt);
     }//GEN-LAST:event_jTextFieldPreviewMeterNumKeyTyped
 
@@ -1304,18 +1366,17 @@ public class APSPanel extends javax.swing.JFrame {
         String meterNumber = jTextFieldPreviewMeterNum.getText();
         String amount = jTextFieldPreviewAmount.getText();
         String phoneNumber = jTextFieldPreviewPhoneNum.getText();
-        
-        if(!meterNumber.isBlank() && !meterNumber.isEmpty() &&
-                !amount.isBlank() && !amount.isEmpty() &&
-                !phoneNumber.isBlank() && !phoneNumber.isEmpty())
-        {
+
+        if (!meterNumber.isBlank() && !meterNumber.isEmpty()
+                && !amount.isBlank() && !amount.isEmpty()
+                && !phoneNumber.isBlank() && !phoneNumber.isEmpty()) {
             jButtonGenerate.setEnabled(true);
         }
     }
 
     private void jTextFieldPreviewAmountKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewAmountKeyTyped
         amountOnlyTextField(evt);
-        
+
         enableGenerateButton();
     }//GEN-LAST:event_jTextFieldPreviewAmountKeyTyped
 
@@ -1325,35 +1386,54 @@ public class APSPanel extends javax.swing.JFrame {
     private void amountOnlyTextField(KeyEvent evt) {
         javax.swing.JTextField jtf = (javax.swing.JTextField) evt.getComponent();
         char keyChar = evt.getKeyChar();
-        if(keyChar >= '0' && keyChar <= '9' ||
-                keyChar == KeyEvent.VK_BACK_SPACE || keyChar == KeyEvent.VK_DELETE ||
-                keyChar == KeyEvent.VK_PERIOD)
-        {
+        if (keyChar >= '0' && keyChar <= '9'
+                || keyChar == KeyEvent.VK_BACK_SPACE || keyChar == KeyEvent.VK_DELETE
+                || keyChar == KeyEvent.VK_PERIOD) {
             jtf.setEditable(true);
-        } else{
+        } else {
             jtf.setEditable(false);
         }
     }
 
     private void jTextFieldPreviewPhoneNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewPhoneNumKeyTyped
         numbersOnlyTextField(evt);
-        
+
         enableGenerateButton();
     }//GEN-LAST:event_jTextFieldPreviewPhoneNumKeyTyped
 
+    private void jButtonCopyTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCopyTokenActionPerformed
+        String receiptText = jTextArea1.getText();
+
+        int marker = receiptText.lastIndexOf("TOKEN: ");
+
+        if (marker != -1) {
+            int tokenLocation = marker + "TOKEN: ".length() + 1;
+            String token = receiptText.substring(tokenLocation);
+
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            StringSelection selected = new StringSelection(token);
+            clipboard.setContents(selected, null);
+            
+            JOptionPane.showMessageDialog(this, "Token copied successfully!", "Copy Token", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "No token was generated!", "Copy Token", JOptionPane.WARNING_MESSAGE);
+        }
+
+
+    }//GEN-LAST:event_jButtonCopyTokenActionPerformed
+
     /**
-     * This method ensures only numbers are typed into a text field. It takes a 
-     * KeyEvent listener as an argument and the event's text field will accept 
+     * This method ensures only numbers are typed into a text field. It takes a
+     * KeyEvent listener as an argument and the event's text field will accept
      * numbers only.
      */
     private void numbersOnlyTextField(KeyEvent evt) {
         javax.swing.JTextField jtf = (javax.swing.JTextField) evt.getComponent();
         char keyChar = evt.getKeyChar();
-        if(keyChar >= '0' && keyChar <= '9' ||
-                keyChar == KeyEvent.VK_BACK_SPACE || keyChar == KeyEvent.VK_DELETE)
-        {
+        if (keyChar >= '0' && keyChar <= '9'
+                || keyChar == KeyEvent.VK_BACK_SPACE || keyChar == KeyEvent.VK_DELETE) {
             jtf.setEditable(true);
-        } else{
+        } else {
             jtf.setEditable(false);
         }
     }

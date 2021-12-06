@@ -16,11 +16,34 @@ public class Receipt {
     
     private static final String SCREEN_NEW_LINE = "\n-----\n";
     
+    /*Labels*/
     private static final String METER__NUMBER = "Meter Number: ";
     private static final String DEBT_DEDUCTION = "Debt deduction: ₦";
+    private static final String TRANSACTION__REFERENCE_ = "Transaction Reference: ";
+    private static final String PHONE__NUMBER_ = "Phone Number: ";
+    private static final String DEDUCTION_ = "Deduction: %";
+    private static final String CURRENT_OUTSTANDING_BALANCE = "Current outstanding balance: ₦";
+    private static final String TAX = "Tax: ₦";
+    private static final String VALUE_OF_UNITS = "Value of units: ₦";
+    private static final String UNITS_ONBTAINABLE_ = "Units onbtainable: ";
+    private static final String AMOUNT__TENDERED = "Amount Tendered: ₦";
+    private static final String TYPE_OF__METER = "Type of Meter: ";
+    private static final String METER__REGISTERED_TO = "Meter Registered to: ";
+    private static final String CUSTOMER__ADDRESS = "Customer Address: ";
     
-    //JSON Keys
+    /*JSON Keys*/
     private static final String METER_NO = "meterNo";
+    private static final String TRANSACTION_REFERENCE = "transactionReference";
+    private static final String PHONE_NO = "phoneNo";
+    private static final String OUTSTANDING_CHARGES = "outstandingCharges";
+    private static final String OUTSTANDING_CHARGES_NET = "outstandingChargesNet";
+    private static final String UNITS_TAX = "unitsTax";
+    private static final String UNITS_GROSS = "unitsGross";
+    private static final String UNITS = "units";
+    private static final String TOTAL_AMOUNT = "totalAmount";
+    private static final String METER_TYPE = "meterType";
+    private static final String ADDRESS = "address";
+    private static final String CUSTOMER_NAME = "customerName";
     
     
     private final JSONObject jsonResponse;
@@ -91,20 +114,15 @@ public class Receipt {
         sb.append(this.jsonResponse.getDouble("minimumPurchase"));
         
         return sb.toString();
-    }
-    private static final String ADDRESS = "address";
-    private static final String CUSTOMER__ADDRESS = "Customer Address: ";
-    private static final String CUSTOMER_NAME = "customerName";
-    private static final String METER__REGISTERED_TO = "Meter Registered to: ";
-    
+    }    
 
     public String printTransactionToScreen() {
         StringBuilder sb = new StringBuilder();
         
         JSONObject meterInfo = this.jsonResponse.getJSONObject("customerMeterInfo");
         
-        sb.append("Transaction Reference: ")
-                .append(this.jsonResponse.getString("transactionReference"))
+        sb.append(TRANSACTION__REFERENCE_)
+                .append(this.jsonResponse.getString(TRANSACTION_REFERENCE))
                 .append(SCREEN_NEW_LINE);
         
         sb.append(METER__NUMBER)
@@ -160,6 +178,82 @@ public class Receipt {
         
         return sb.toString();
     }
-    
-    
+
+    public String printVendToScreen() {
+        StringBuilder sb = new StringBuilder();
+        
+        JSONObject meterInfo = this.jsonResponse.getJSONObject("customerMeterInfo");
+        
+        sb.append(METER__NUMBER)
+                .append(meterInfo.getString(METER_NO))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(METER__REGISTERED_TO)
+                .append(meterInfo.getString(CUSTOMER_NAME))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(CUSTOMER__ADDRESS)
+                .append(meterInfo.getString(ADDRESS))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(PHONE__NUMBER_)
+                .append(meterInfo.getString(PHONE_NO))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(TRANSACTION__REFERENCE_)
+                .append(this.jsonResponse.getString(TRANSACTION_REFERENCE))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(TYPE_OF__METER)
+                .append(this.jsonResponse.getString(METER_TYPE))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(AMOUNT__TENDERED)
+                .append(this.jsonResponse.getDouble(TOTAL_AMOUNT))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(UNITS_ONBTAINABLE_)
+                .append(this.jsonResponse.getDouble(UNITS))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(VALUE_OF_UNITS)
+                .append(this.jsonResponse.getDouble(UNITS_GROSS))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(TAX)
+                .append(this.jsonResponse.getDouble(UNITS_TAX))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(DEBT_DEDUCTION)
+                .append(this.jsonResponse.getDouble(OUTSTANDING_CHARGES_NET))
+                .append(SCREEN_NEW_LINE);
+        JSONArray outstandingDetails = this.jsonResponse.getJSONArray(OUTSTANDING_CHARGES);
+        
+        if(outstandingDetails.length() != 0){
+            sb.append(outstandingDetails.getString(0))
+                    .append("\n");
+            
+            sb.append(CURRENT_OUTSTANDING_BALANCE)
+                    .append(outstandingDetails.getDouble(1))
+                    .append("\n");
+            
+            sb.append(DEBT_DEDUCTION)
+                    .append(outstandingDetails.getDouble(2))
+                    .append("\n");
+            
+            sb.append(DEDUCTION_)
+                    .append(outstandingDetails.getDouble(3))
+                    .append(SCREEN_NEW_LINE);
+        }
+        
+        sb.append("TOKEN: ");
+        
+        if (this.jsonResponse.getString("token") != null){
+            sb.append(this.jsonResponse.getString("token"));
+        } else {
+            sb.append("\n");
+        }
+        
+        return sb.toString();
+    }
 }
