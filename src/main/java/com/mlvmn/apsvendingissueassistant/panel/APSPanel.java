@@ -103,6 +103,7 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldPreviewAmount = new javax.swing.JTextField();
         jLabelPreviewPhoneNum = new javax.swing.JLabel();
         jTextFieldPreviewPhoneNum = new javax.swing.JTextField();
+        jCheckBoxServiceCharge = new javax.swing.JCheckBox();
         jDialogServiceCharge = new javax.swing.JDialog();
         jPanellServiceCharge = new javax.swing.JPanel();
         jLabelServiceCharge = new javax.swing.JLabel();
@@ -475,8 +476,9 @@ public class APSPanel extends javax.swing.JFrame {
 
         jDialogPreviewVend.setTitle("Preview Vend/Transaction Reference");
         jDialogPreviewVend.setModal(true);
+        jDialogPreviewVend.setPreferredSize(new java.awt.Dimension(400, 300));
         jDialogPreviewVend.setResizable(false);
-        jDialogPreviewVend.setSize(new java.awt.Dimension(400, 280));
+        jDialogPreviewVend.setSize(new java.awt.Dimension(400, 320));
         jDialogPreviewVend.setLocationRelativeTo(null);
 
         jPanelValidateMeterNum1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -532,6 +534,9 @@ public class APSPanel extends javax.swing.JFrame {
             }
         });
 
+        jCheckBoxServiceCharge.setSelected(true);
+        jCheckBoxServiceCharge.setText("Apply service charge");
+
         javax.swing.GroupLayout jPanelValidateMeterNum1Layout = new javax.swing.GroupLayout(jPanelValidateMeterNum1);
         jPanelValidateMeterNum1.setLayout(jPanelValidateMeterNum1Layout);
         jPanelValidateMeterNum1Layout.setHorizontalGroup(
@@ -540,20 +545,21 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanelValidateMeterNum1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTextFieldPreviewMeterNum)
+                    .addComponent(jTextFieldPreviewAmount)
+                    .addComponent(jTextFieldPreviewPhoneNum)
                     .addGroup(jPanelValidateMeterNum1Layout.createSequentialGroup()
                         .addComponent(jButtonClearPreview)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 137, Short.MAX_VALUE)
                         .addComponent(jButtonGenerate)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonCancelPreview))
-                    .addComponent(jTextFieldPreviewAmount)
                     .addGroup(jPanelValidateMeterNum1Layout.createSequentialGroup()
                         .addGroup(jPanelValidateMeterNum1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jCheckBoxServiceCharge)
                             .addComponent(jLabelPreviewMeterNum)
                             .addComponent(jLabelPreviewAmount)
                             .addComponent(jLabelPreviewPhoneNum))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jTextFieldPreviewPhoneNum))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanelValidateMeterNum1Layout.setVerticalGroup(
@@ -571,12 +577,14 @@ public class APSPanel extends javax.swing.JFrame {
                 .addComponent(jLabelPreviewPhoneNum)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextFieldPreviewPhoneNum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addComponent(jCheckBoxServiceCharge)
                 .addGap(18, 18, 18)
                 .addGroup(jPanelValidateMeterNum1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonClearPreview)
-                    .addComponent(jButtonCancelPreview)
-                    .addComponent(jButtonGenerate))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButtonGenerate)
+                    .addComponent(jButtonCancelPreview))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jDialogPreviewVendLayout = new javax.swing.GroupLayout(jDialogPreviewVend.getContentPane());
@@ -592,8 +600,8 @@ public class APSPanel extends javax.swing.JFrame {
             jDialogPreviewVendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jDialogPreviewVendLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanelValidateMeterNum1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanelValidateMeterNum1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jDialogServiceCharge.setTitle("Service Charge");
@@ -1022,6 +1030,8 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldPreviewMeterNum.setText("");
         jTextFieldPreviewAmount.setText("");
         jTextFieldPreviewPhoneNum.setText("");
+        
+        jCheckBoxServiceCharge.setSelected(true);
 
         jButtonGenerate.setEnabled(false);
 
@@ -1037,6 +1047,8 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldPreviewMeterNum.setText("");
         jTextFieldPreviewAmount.setText("");
         jTextFieldPreviewPhoneNum.setText("");
+        
+        jCheckBoxServiceCharge.setSelected(true);
 
         jButtonGenerate.setEnabled(false);
 
@@ -1317,16 +1329,27 @@ public class APSPanel extends javax.swing.JFrame {
 
             Receipt receipt = new Receipt(new JSONObject(vendDetails));
 
-            vendDetails = receipt.printVendToScreen();
+            vendDetails = receipt.printVendToScreen(false);
 
             jTextArea1.setText(vendDetails);
         }
     }//GEN-LAST:event_jButtonValidateMeterNumActionPerformed
 
     private void jButtonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateActionPerformed
+        String amount;
+        
+        if (jCheckBoxServiceCharge.isSelected()){
+            amount = String.valueOf(
+                    Double.parseDouble(jTextFieldPreviewAmount.getText()) - 
+                            Double.parseDouble(vs.retrieveServiceCharge())
+            );
+        } else {
+            amount = jTextFieldPreviewAmount.getText();
+        }
+        
         String[] data = {
             jTextFieldPreviewMeterNum.getText(),
-            jTextFieldPreviewAmount.getText(),
+            amount,
             jTextFieldPreviewPhoneNum.getText()
         };
 
@@ -1338,14 +1361,14 @@ public class APSPanel extends javax.swing.JFrame {
 
             Receipt receipt = new Receipt(new JSONObject(transaction));
 
-            transaction = receipt.printTransactionToScreen();
+            transaction = receipt.printTransactionToScreen(jCheckBoxServiceCharge.isSelected());
         } else {
             String createdTransaction = backgroundWorker(3, data);
             JSONObject jsonTrans = new JSONObject(createdTransaction);
             transaction = backgroundWorker(4, jsonTrans.getString("transactionReference"));
 
             Receipt receipt = new Receipt(new JSONObject(transaction));
-            transaction = receipt.printVendToScreen();
+            transaction = receipt.printVendToScreen(jCheckBoxServiceCharge.isSelected());
         }
 
         jTextArea1.setText(transaction);
@@ -1493,6 +1516,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonValidateMeterNum;
     private javax.swing.JButton jButtonVend;
     private javax.swing.JButton jButtonVendTrasactionRef;
+    private javax.swing.JCheckBox jCheckBoxServiceCharge;
     private javax.swing.JDialog jDialogCredentials;
     private javax.swing.JDialog jDialogDemoLive;
     private javax.swing.JDialog jDialogLoading;

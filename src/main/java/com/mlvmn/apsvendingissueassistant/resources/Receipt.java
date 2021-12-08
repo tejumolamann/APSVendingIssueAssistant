@@ -30,6 +30,7 @@ public class Receipt {
     private static final String TYPE_OF__METER = "Type of Meter: ";
     private static final String METER__REGISTERED_TO = "Meter Registered to: ";
     private static final String CUSTOMER__ADDRESS = "Customer Address: ";
+    private static final String SERVICE_CHARGE = "Service charge: ₦";
     
     /*JSON Keys*/
     private static final String METER_NO = "meterNo";
@@ -116,7 +117,7 @@ public class Receipt {
         return sb.toString();
     }    
 
-    public String printTransactionToScreen() {
+    public String printTransactionToScreen(boolean appliedServiceCharge) {
         StringBuilder sb = new StringBuilder();
         
         JSONObject meterInfo = this.jsonResponse.getJSONObject("customerMeterInfo");
@@ -137,9 +138,18 @@ public class Receipt {
                 .append(meterInfo.getString(ADDRESS))
                 .append(SCREEN_NEW_LINE);
         
-        sb.append("Amount Tendered: ₦")
-                .append(this.jsonResponse.getDouble("totalAmount"))
+        sb.append(AMOUNT__TENDERED)
+                .append(this.jsonResponse.getDouble(TOTAL_AMOUNT))
                 .append(SCREEN_NEW_LINE);
+        
+        //service charge
+        sb.append(SERVICE_CHARGE);
+        if (appliedServiceCharge){
+            sb.append(Settings.getSettings().retrieveServiceCharge());
+        } else {
+            sb.append("0.0");
+        }
+        sb.append(SCREEN_NEW_LINE);
         
         sb.append("Units onbtainable: ")
                 .append(this.jsonResponse.getDouble("units"))
@@ -187,7 +197,7 @@ public class Receipt {
         return sb.toString();
     }
 
-    public String printVendToScreen() {
+    public String printVendToScreen(boolean appliedServiceCharge) {
         StringBuilder sb = new StringBuilder();
         
         JSONObject meterInfo = this.jsonResponse.getJSONObject("customerMeterInfo");
@@ -219,6 +229,16 @@ public class Receipt {
         sb.append(AMOUNT__TENDERED)
                 .append(this.jsonResponse.getDouble(TOTAL_AMOUNT))
                 .append(SCREEN_NEW_LINE);
+        
+        //service charge
+        sb.append(SERVICE_CHARGE);
+        if (appliedServiceCharge){
+            sb.append(Settings.getSettings().retrieveServiceCharge());
+        } else {
+            sb.append("0.0");
+        }
+        sb.append(SCREEN_NEW_LINE);
+        
         
         sb.append(UNITS_ONBTAINABLE_)
                 .append(this.jsonResponse.getDouble(UNITS))
@@ -275,4 +295,5 @@ public class Receipt {
         
         return sb.toString();
     }
+    
 }
