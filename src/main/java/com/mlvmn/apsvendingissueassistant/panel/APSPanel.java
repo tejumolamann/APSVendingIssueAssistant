@@ -134,7 +134,6 @@ public class APSPanel extends javax.swing.JFrame {
         jMenuItemServiceCharge = new javax.swing.JMenuItem();
 
         jDialogValidateMeterNum.setTitle("Validate Meter Number");
-        jDialogValidateMeterNum.setAlwaysOnTop(true);
         jDialogValidateMeterNum.setModal(true);
         jDialogValidateMeterNum.setResizable(false);
         jDialogValidateMeterNum.setSize(new java.awt.Dimension(400, 170));
@@ -228,7 +227,6 @@ public class APSPanel extends javax.swing.JFrame {
         );
 
         jDialogCredentials.setTitle("Credentials");
-        jDialogCredentials.setAlwaysOnTop(true);
         jDialogCredentials.setLocation(new java.awt.Point(0, 0));
         jDialogCredentials.setMinimumSize(new java.awt.Dimension(400, 350));
         jDialogCredentials.setModal(true);
@@ -396,7 +394,6 @@ public class APSPanel extends javax.swing.JFrame {
         );
 
         jDialogDemoLive.setTitle("Demo/Live Vending");
-        jDialogDemoLive.setAlwaysOnTop(true);
         jDialogDemoLive.setModal(true);
         jDialogDemoLive.setResizable(false);
         jDialogDemoLive.setSize(new java.awt.Dimension(400, 175));
@@ -477,7 +474,6 @@ public class APSPanel extends javax.swing.JFrame {
         );
 
         jDialogPreviewVend.setTitle("Preview Vend/Transaction Reference");
-        jDialogPreviewVend.setAlwaysOnTop(true);
         jDialogPreviewVend.setModal(true);
         jDialogPreviewVend.setResizable(false);
         jDialogPreviewVend.setSize(new java.awt.Dimension(400, 280));
@@ -601,7 +597,6 @@ public class APSPanel extends javax.swing.JFrame {
         );
 
         jDialogServiceCharge.setTitle("Service Charge");
-        jDialogServiceCharge.setAlwaysOnTop(true);
         jDialogServiceCharge.setModal(true);
         jDialogServiceCharge.setResizable(false);
         jDialogServiceCharge.setSize(new java.awt.Dimension(400, 170));
@@ -701,7 +696,6 @@ public class APSPanel extends javax.swing.JFrame {
         );
 
         jDialogLoading.setTitle("Loading...");
-        jDialogLoading.setAlwaysOnTop(true);
         jDialogLoading.setModal(true);
         jDialogLoading.setResizable(false);
         jDialogLoading.setSize(new java.awt.Dimension(400, 175));
@@ -853,6 +847,7 @@ public class APSPanel extends javax.swing.JFrame {
 
         jPanelDisplay.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
         jScrollPaneDisplayValues.setViewportView(jTextArea1);
@@ -1337,7 +1332,7 @@ public class APSPanel extends javax.swing.JFrame {
 
         jDialogPreviewVend.setVisible(false);
 
-        String transaction = null;
+        String transaction;
         if (jButtonGenerate.getText().equals("Generate")) {
             transaction = backgroundWorker(3, data);
 
@@ -1407,7 +1402,7 @@ public class APSPanel extends javax.swing.JFrame {
         int marker = receiptText.lastIndexOf("TOKEN: ");
 
         if (marker != -1) {
-            int tokenLocation = marker + "TOKEN: ".length() + 1;
+            int tokenLocation = marker + "TOKEN: ".length();
             String token = receiptText.substring(tokenLocation);
 
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
