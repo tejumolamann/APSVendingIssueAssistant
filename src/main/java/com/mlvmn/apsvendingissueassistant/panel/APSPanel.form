@@ -97,6 +97,7 @@
                 <Property name="toolTipText" type="java.lang.String" value="Type in a meter number to validate it"/>
               </Properties>
               <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextFieldValidateMeterNumActionPerformed"/>
                 <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTextFieldValidateMeterNumKeyTyped"/>
               </Events>
             </Component>
@@ -1088,6 +1089,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Get Balance"/>
             <Property name="toolTipText" type="java.lang.String" value="Get balance in wallet"/>
+            <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="WALLET_ACTION_COMMAND" type="code"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonGetBalanceActionPerformed"/>
