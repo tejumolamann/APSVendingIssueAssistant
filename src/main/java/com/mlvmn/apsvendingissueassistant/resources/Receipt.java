@@ -31,6 +31,8 @@ public class Receipt {
     private static final String METER__REGISTERED_TO = "Meter Registered to: ";
     private static final String CUSTOMER__ADDRESS = "Customer Address: ";
     private static final String SERVICE_CHARGE = "Service charge: ₦";
+    private static final String OUTSTANDING_BALANCE = "Outstanding balance: ₦";
+    private static final String OUTSTANDING_DESCRIPTION = "Outstanding description: ";
     
     /*JSON Keys*/
     private static final String METER_NO = "meterNo";
@@ -45,6 +47,7 @@ public class Receipt {
     private static final String METER_TYPE = "meterType";
     private static final String ADDRESS = "address";
     private static final String CUSTOMER_NAME = "customerName";
+    private static final String OUTSTANDING_TYPE = "type";
     
     
     private final JSONObject jsonResponse;
@@ -166,24 +169,30 @@ public class Receipt {
         sb.append(DEBT_DEDUCTION)
                 .append(this.jsonResponse.getDouble("outstandingChargesNet"))
                 .append(SCREEN_NEW_LINE);
-        JSONArray outstandingDetails = this.jsonResponse.getJSONArray("outstandingCharges");
         
-        if(outstandingDetails.length() != 0){
-            sb.append(outstandingDetails.getString(0))
-                    .append("\n");
+        if (!this.jsonResponse.isNull(OUTSTANDING_CHARGES)) {
+            JSONArray outstandingArray = this.jsonResponse.getJSONArray(OUTSTANDING_CHARGES);
             
-            sb.append("Current outstanding balance: ₦")
-                    .append(outstandingDetails.getDouble(1))
-                    .append("\n");
-            
-            sb.append(DEBT_DEDUCTION)
-                    .append(outstandingDetails.getDouble(2))
-                    .append("\n");
-            
-            sb.append("Deduction: ₦")
-                    .append(outstandingDetails.getDouble(3))
-                    .append("%")
-                    .append("\n");
+            if (outstandingArray.length() != 0) {
+                
+                JSONObject outstandingDetails = outstandingArray.getJSONObject(0);
+                
+                sb.append(OUTSTANDING_DESCRIPTION)
+                        .append(outstandingDetails.getString(OUTSTANDING_TYPE))
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append(OUTSTANDING_BALANCE)
+                        .append(outstandingDetails.getDouble("currentOutstandingBalance"))
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append("Debt to be deducted: ₦")
+                        .append(outstandingDetails.getDouble("amountPaying"))
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append("Percentage deduction: %")
+                        .append(outstandingDetails.getDouble("percentPaying"))
+                        .append(SCREEN_NEW_LINE);
+            }
         }
         
         sb.append("Date: ")
@@ -254,27 +263,31 @@ public class Receipt {
         
         sb.append(DEBT_DEDUCTION)
                 .append(this.jsonResponse.getDouble(OUTSTANDING_CHARGES_NET))
-                .append(SCREEN_NEW_LINE);
-        JSONArray outstandingArray = this.jsonResponse.getJSONArray(OUTSTANDING_CHARGES);
+                .append(SCREEN_NEW_LINE);        
         
-        if(outstandingArray.length() != 0){
-            JSONObject outstandingDetails = outstandingArray.getJSONObject(0);
+        if(!this.jsonResponse.isNull(OUTSTANDING_CHARGES)){
             
-            sb.append("Outstandin description: ")
-                    .append(outstandingDetails.getString("type"))
-                    .append(SCREEN_NEW_LINE);
+            JSONArray outstandingArray = this.jsonResponse.getJSONArray(OUTSTANDING_CHARGES);
             
-            sb.append("Outstanding balance: ₦")
-                    .append(outstandingDetails.getDouble("currentOutstandingBalance"))
-                    .append(SCREEN_NEW_LINE);
-            
-            sb.append("Debt deducted: ₦")
-                    .append(outstandingDetails.getDouble("amountPaying"))
-                    .append(SCREEN_NEW_LINE);
-            
-            sb.append("Percentage deducted: %")
-                    .append(outstandingDetails.getDouble("percentPaying"))
-                    .append(SCREEN_NEW_LINE);
+            if (outstandingArray.length() != 0) {
+                JSONObject outstandingDetails = outstandingArray.getJSONObject(0);
+                
+                sb.append(OUTSTANDING_DESCRIPTION)
+                        .append(outstandingDetails.getString(OUTSTANDING_TYPE))
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append(OUTSTANDING_BALANCE)
+                        .append(outstandingDetails.getDouble("currentOutstandingBalance"))
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append("Debt deducted: ₦")
+                        .append(outstandingDetails.getDouble("amountPaying"))
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append("Percentage deducted: %")
+                        .append(outstandingDetails.getDouble("percentPaying"))
+                        .append(SCREEN_NEW_LINE);
+            }
         }
         
         sb.append("Date: ")
