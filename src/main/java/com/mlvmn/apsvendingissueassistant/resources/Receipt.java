@@ -37,7 +37,7 @@ public class Receipt {
     /*JSON Keys*/
     private static final String METER_NO = "meterNo";
     private static final String TRANSACTION_REFERENCE = "transactionReference";
-    private static final String PHONE_NO = "phoneNo";
+    private static final String PHONE_NO = "transactionGsmNo";
     private static final String OUTSTANDING_CHARGES = "outstandingCharges";
     private static final String OUTSTANDING_CHARGES_NET = "outstandingChargesNet";
     private static final String UNITS_TAX = "unitsTax";
@@ -56,6 +56,11 @@ public class Receipt {
         this.jsonResponse = jsonResponse;
     }
     
+    /**
+     * This method formats the JSON response received from checking a vendor's 
+     * wallet balance into human understandable format.
+     * @return String
+     */
     public String printBalanceToScreen(){
         StringBuilder sb = new StringBuilder();
         
@@ -71,6 +76,10 @@ public class Receipt {
         return sb.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     public String printMeterDetailsToScreen() {
         StringBuilder sb = new StringBuilder();
         
@@ -120,6 +129,15 @@ public class Receipt {
         return sb.toString();
     }    
 
+    /**
+     * This method returns a String that represents the information from a new 
+     * transaction, but only in human understandable format, and it can be used 
+     * to display on a screen as the result of the new transaction
+     * 
+     * @param appliedServiceCharge true if a service charge was applied and false
+     * if it wasn't
+     * @return String formatted from JSON that depicts details of the new transaction.
+     */
     public String printTransactionToScreen(boolean appliedServiceCharge) {
         StringBuilder sb = new StringBuilder();
         
@@ -139,6 +157,10 @@ public class Receipt {
         
         sb.append(CUSTOMER__ADDRESS)
                 .append(meterInfo.getString(ADDRESS))
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(PHONE__NUMBER_)
+                .append(this.jsonResponse.getString(PHONE_NO))
                 .append(SCREEN_NEW_LINE);
         
         sb.append(AMOUNT__TENDERED)
@@ -206,6 +228,13 @@ public class Receipt {
         return sb.toString();
     }
 
+    /**
+     * This method formats the JSON response for a successful vend into understandable 
+     * format which can be displayed on the screen.
+     * @param appliedServiceCharge boolean, true if a service charge was applied, 
+     * false otherwise.
+     * @return String
+     */
     public String printVendToScreen(boolean appliedServiceCharge) {
         StringBuilder sb = new StringBuilder();
         
@@ -224,7 +253,7 @@ public class Receipt {
                 .append(SCREEN_NEW_LINE);
         
         sb.append(PHONE__NUMBER_)
-                .append(meterInfo.getString(PHONE_NO))
+                .append(this.jsonResponse.getString(PHONE_NO))
                 .append(SCREEN_NEW_LINE);
         
         sb.append(TRANSACTION__REFERENCE_)
