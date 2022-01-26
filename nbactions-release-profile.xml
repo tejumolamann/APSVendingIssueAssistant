@@ -30,14 +30,17 @@
             </properties>
         </action>
         <action>
-            <actionName>build-with-dependencies</actionName>
-            <reactor>also-make</reactor>
+            <actionName>profile</actionName>
             <packagings>
-                <packaging>*</packaging>
+                <packaging>jar</packaging>
             </packagings>
             <goals>
-                <goal>install</goal>
-                <goal>package</goal>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:3.0.0:exec</goal>
             </goals>
+            <properties>
+                <exec.args>-classpath %classpath com.mlvmn.apsvendingissueassistant.panel.APSPanel</exec.args>
+                <exec.executable>java</exec.executable>
+            </properties>
         </action>
     </actions>
