@@ -6,6 +6,7 @@
 package com.mlvmn.apsvendingissueassistant.panel;
 
 import com.mlvmn.apsvendingissueassistant.engine.VendControl;
+import com.mlvmn.apsvendingissueassistant.printing.PrintingService;
 import com.mlvmn.apsvendingissueassistant.resources.Receipt;
 import com.mlvmn.apsvendingissueassistant.resources.Settings;
 import java.awt.HeadlessException;
@@ -19,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ButtonModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import org.json.JSONException;
@@ -52,6 +54,16 @@ public class APSPanel extends javax.swing.JFrame {
     private static final String VEND_TRANSACTION_REFERENCE_ACTION_COMMAND = "vendTransactionReference";
     private static final String NEW_TRANSACTION_ACTION_COMMAND = "newTransaction";
     private static final String PAY_TRANSACTION_ACTION_COMMAND = "payTransaction";
+    
+    /**
+     * An array of the names of the printers installed on the local computer.
+     */
+    private static String[] printerNames;
+    
+    /**
+     * Variable to hold the receipt for a vend.
+     */
+    private static Receipt vendReceipt;
 
     /**
      * Creates new form APSPanel
@@ -61,6 +73,9 @@ public class APSPanel extends javax.swing.JFrame {
         //Initialize objects for vend control and settings
         vc = VendControl.getInstance();
         vs = Settings.getSettings();
+        
+        //Retrieve all the names of the printers installed on the local computer
+        printerNames = PrintingService.getAllInstalledPrinterNames();
 
         initComponents();
     }
@@ -129,6 +144,12 @@ public class APSPanel extends javax.swing.JFrame {
         jProgressBarLoading = new javax.swing.JProgressBar();
         jLabelLoading = new javax.swing.JLabel();
         jButtonLoadingCancelTask = new javax.swing.JButton();
+        jDialogPrint = new javax.swing.JDialog();
+        jPanelPrint = new javax.swing.JPanel();
+        jLabelSelectPrinter = new javax.swing.JLabel();
+        jButtonCancelPrint = new javax.swing.JButton();
+        jButtonPrint = new javax.swing.JButton();
+        jComboBoxPrinterNames = new javax.swing.JComboBox<>();
         jPanelControls = new javax.swing.JPanel();
         jButtonValidate = new javax.swing.JButton();
         jButtonPreviewVend = new javax.swing.JButton();
@@ -136,6 +157,7 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonGetBalance = new javax.swing.JButton();
         jButtonVendTrasactionRef = new javax.swing.JButton();
         jButtonCopyToken = new javax.swing.JButton();
+        jButtonPrintReceipt = new javax.swing.JButton();
         jPanelDisplay = new javax.swing.JPanel();
         jScrollPaneDisplayValues = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
@@ -786,6 +808,84 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jDialogPrint.setTitle("Print Receipt");
+        jDialogPrint.setModal(true);
+        jDialogPrint.setResizable(false);
+        jDialogPrint.setSize(new java.awt.Dimension(400, 170));
+        jDialogPrint.setLocationRelativeTo(null);
+
+        jPanelPrint.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabelSelectPrinter.setText("Select the thermal printer");
+
+        jButtonCancelPrint.setText("Cancel");
+        jButtonCancelPrint.setToolTipText("Cancel print");
+        jButtonCancelPrint.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelPrintActionPerformed(evt);
+            }
+        });
+
+        jButtonPrint.setText("Print");
+        jButtonPrint.setToolTipText("Print using the selected printer");
+        jButtonPrint.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonPrintActionPerformed(evt);
+            }
+        });
+
+        jComboBoxPrinterNames.setModel(new DefaultComboBoxModel(printerNames));
+        jComboBoxPrinterNames.setToolTipText("List of printer names on this computer");
+
+        javax.swing.GroupLayout jPanelPrintLayout = new javax.swing.GroupLayout(jPanelPrint);
+        jPanelPrint.setLayout(jPanelPrintLayout);
+        jPanelPrintLayout.setHorizontalGroup(
+            jPanelPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelPrintLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelPrintLayout.createSequentialGroup()
+                        .addGap(0, 134, Short.MAX_VALUE)
+                        .addComponent(jButtonPrint)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonCancelPrint))
+                    .addGroup(jPanelPrintLayout.createSequentialGroup()
+                        .addComponent(jLabelSelectPrinter)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jComboBoxPrinterNames, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanelPrintLayout.setVerticalGroup(
+            jPanelPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelPrintLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelSelectPrinter)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jComboBoxPrinterNames, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonCancelPrint)
+                    .addComponent(jButtonPrint))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jDialogPrintLayout = new javax.swing.GroupLayout(jDialogPrint.getContentPane());
+        jDialogPrint.getContentPane().setLayout(jDialogPrintLayout);
+        jDialogPrintLayout.setHorizontalGroup(
+            jDialogPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogPrintLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelPrint, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jDialogPrintLayout.setVerticalGroup(
+            jDialogPrintLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialogPrintLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelPrint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Access Power Systems Vending Issue Assistant");
 
@@ -839,6 +939,13 @@ public class APSPanel extends javax.swing.JFrame {
             }
         });
 
+        jButtonPrintReceipt.setText("Print Receipt");
+        jButtonPrintReceipt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonPrintReceiptActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelControlsLayout = new javax.swing.GroupLayout(jPanelControls);
         jPanelControls.setLayout(jPanelControlsLayout);
         jPanelControlsLayout.setHorizontalGroup(
@@ -851,7 +958,8 @@ public class APSPanel extends javax.swing.JFrame {
                     .addComponent(jButtonVend, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonVendTrasactionRef, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonGetBalance, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonCopyToken, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButtonCopyToken, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonPrintReceipt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanelControlsLayout.setVerticalGroup(
@@ -869,7 +977,9 @@ public class APSPanel extends javax.swing.JFrame {
                 .addComponent(jButtonGetBalance)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonCopyToken)
-                .addContainerGap(168, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonPrintReceipt)
+                .addContainerGap(134, Short.MAX_VALUE))
         );
 
         jPanelDisplay.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -1458,9 +1568,9 @@ public class APSPanel extends javax.swing.JFrame {
             //When the action command is to vend
             if (!evt.getActionCommand().equals(PAY_TRANSACTION_ACTION_COMMAND)) {    //otherwise the action command will be just to preview
 
-                Receipt receipt = new Receipt(new JSONObject(createdTransaction));
+                vendReceipt = new Receipt(new JSONObject(createdTransaction));
                 
-                jTextArea1.setText(receipt.printTransactionToScreen(serviceChargeIsApplied));
+                jTextArea1.setText(vendReceipt.printTransactionToScreen(serviceChargeIsApplied));
             } else {
                 
                 //Get a transaction reference
@@ -1471,13 +1581,13 @@ public class APSPanel extends javax.swing.JFrame {
 
                 //Check for error
                 if (!vc.isError(vendedTrans)) {
-                    Receipt receipt = new Receipt(new JSONObject(vendedTrans));
+                    vendReceipt = new Receipt(new JSONObject(vendedTrans));
 
-                    jTextArea1.setText(receipt.printVendToScreen(serviceChargeIsApplied));
+                    jTextArea1.setText(vendReceipt.printVendToScreen(serviceChargeIsApplied));
                 }
             }
         } catch (JSONException jSONException) {
-            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, jSONException);
+            JOptionPane.showMessageDialog(this, "Error: " + jSONException.getLocalizedMessage(), "Error interpreting data!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonGenerateActionPerformed
 
@@ -1553,6 +1663,33 @@ public class APSPanel extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTextFieldValidateMeterNumActionPerformed
 
+    private void jButtonPrintReceiptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPrintReceiptActionPerformed
+        jDialogPrint.setVisible(true);
+    }//GEN-LAST:event_jButtonPrintReceiptActionPerformed
+
+    private void jButtonCancelPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelPrintActionPerformed
+        jDialogPrint.setVisible(false);
+    }//GEN-LAST:event_jButtonCancelPrintActionPerformed
+
+    private void jButtonPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPrintActionPerformed
+        if(vendReceipt == null){
+            JOptionPane.showMessageDialog(
+                    this, 
+                    "There was no vend performed.\n\nDo a vend and try again.", 
+                    "No Vend", 
+                    JOptionPane.WARNING_MESSAGE
+            );
+        } else{
+            String printerName = (String) jComboBoxPrinterNames.getSelectedItem();
+
+            try {
+                vendReceipt.sendToPrinter(printerName);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, ex.getLocalizedMessage(), "Printer Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButtonPrintActionPerformed
+
     /**
      * This method ensures only numbers are typed into a text field. It takes a
      * KeyEvent listener as an argument and the event's text field will accept
@@ -1610,6 +1747,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JButton jButtonCancelDemoLive;
     private javax.swing.JButton jButtonCancelPreview;
+    private javax.swing.JButton jButtonCancelPrint;
     private javax.swing.JButton jButtonCancelSave;
     private javax.swing.JButton jButtonCancelServiceCharge;
     private javax.swing.JButton jButtonCancelValidateMeterNum;
@@ -1622,6 +1760,8 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonGetBalance;
     private javax.swing.JButton jButtonLoadingCancelTask;
     private javax.swing.JButton jButtonPreviewVend;
+    private javax.swing.JButton jButtonPrint;
+    private javax.swing.JButton jButtonPrintReceipt;
     private javax.swing.JButton jButtonSaveCredentials;
     private javax.swing.JButton jButtonSaveDemoLive1;
     private javax.swing.JButton jButtonSaveServiceCharge;
@@ -1630,10 +1770,12 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JButton jButtonVend;
     private javax.swing.JButton jButtonVendTrasactionRef;
     private javax.swing.JCheckBox jCheckBoxServiceCharge;
+    private javax.swing.JComboBox<String> jComboBoxPrinterNames;
     private javax.swing.JDialog jDialogCredentials;
     private javax.swing.JDialog jDialogDemoLive;
     private javax.swing.JDialog jDialogLoading;
     private javax.swing.JDialog jDialogPreviewVend;
+    private javax.swing.JDialog jDialogPrint;
     private javax.swing.JDialog jDialogServiceCharge;
     private javax.swing.JDialog jDialogValidateMeterNum;
     private javax.swing.JLabel jLabelAuthCode;
@@ -1643,6 +1785,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelPreviewAmount;
     private javax.swing.JLabel jLabelPreviewMeterNum;
     private javax.swing.JLabel jLabelPreviewPhoneNum;
+    private javax.swing.JLabel jLabelSelectPrinter;
     private javax.swing.JLabel jLabelServiceCharge;
     private javax.swing.JLabel jLabelUsername;
     private javax.swing.JLabel jLabelValidateMeterNum;
@@ -1657,6 +1800,7 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelDemoLive;
     private javax.swing.JPanel jPanelDisplay;
     private javax.swing.JPanel jPanelLoading;
+    private javax.swing.JPanel jPanelPrint;
     private javax.swing.JPanel jPanelValidateMeterNum;
     private javax.swing.JPanel jPanelValidateMeterNum1;
     private javax.swing.JPanel jPanellServiceCharge;

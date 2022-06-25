@@ -5,6 +5,8 @@
  */
 package com.mlvmn.apsvendingissueassistant.resources;
 
+import com.mlvmn.apsvendingissueassistant.printing.PrintingService;
+import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -336,6 +338,22 @@ public class Receipt {
         }
         
         return sb.toString();
+    }
+    
+    public void sendToPrinter(String printerName) throws IOException{
+        String payLoad = new String();
+        
+        //For prepaid meter vends
+        if(this.jsonResponse.getString(METER_NO).length() >= 11){
+            
+        }
+        
+        //For postpaid meter vends
+        if(this.jsonResponse.getString(METER_NO).length() < 11){
+            
+        }
+        
+        PrintingService.printToThermalPrinter(printerName, payLoad);
     }
     
 }

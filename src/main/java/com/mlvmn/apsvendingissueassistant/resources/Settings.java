@@ -42,6 +42,7 @@ public class Settings {
     private static final String SERVICE_CHARGE = "serviceCharge";
     private static final String MACHINE_ID = "Machine_ID";
     private static final String AUTHORIZATION_TOKEN = "authorization_token";
+    private static final String THERMAL_PRINTER_NAME = "thermal_printer_name";
     
     /**
      * Constructor
@@ -193,4 +194,23 @@ public class Settings {
         saveSettings();
     }
     
+    /**
+     * This method retrieves the stored name of the thermal printer used to 
+     * print paper receipts.
+     * 
+     * @return String the name of the previously stored thermal printer name.
+     */
+    public String retrieveThermalPrinterName(){
+        return this.prop.getProperty(THERMAL_PRINTER_NAME, "");
+    }
+    
+    /**
+     * This method stores the name of the thermal printer used by the application.
+     * 
+     * @param thermalPrinterName
+     */
+    public void storePrinterName(String thermalPrinterName){
+        this.prop.setProperty(THERMAL_PRINTER_NAME, thermalPrinterName);
+        saveSettings();
+    }
 }
