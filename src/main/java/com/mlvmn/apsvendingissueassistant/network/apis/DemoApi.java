@@ -4,8 +4,12 @@
  */
 package com.mlvmn.apsvendingissueassistant.network.apis;
 
+import static com.mlvmn.apsvendingissueassistant.network.apis.Api.AUTHORIZATION;
 import java.net.URI;
 import java.net.http.HttpRequest;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.json.JSONObject;
 
 /**
@@ -56,7 +60,7 @@ public class DemoApi extends Api{
      * @return HttpRequest object
      */
     @Override
-    public HttpRequest.Builder balance(String accessCode) {
+    public HttpRequest balance(String accessCode) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_DEMO.concat("/api/wallet/balance")));
@@ -64,11 +68,11 @@ public class DemoApi extends Api{
         builder.setHeader(CONTENT_TYPE, APPLICATION_JSON);
         builder.GET();
         
-        return builder;
+        return builder.build();
     }
 
     @Override
-    public HttpRequest.Builder validateMeterNumber(String accessCode, String meterNum) {
+    public HttpRequest validateMeterNumber(String accessCode, String meterNum) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_DEMO.concat("/api/meters/search")));
@@ -80,12 +84,12 @@ public class DemoApi extends Api{
         
         builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
-        return builder;
+        return builder.build();
         
     }
 
     @Override
-    public HttpRequest.Builder newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
+    public HttpRequest newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_DEMO.concat("/api/transactions/new")));
@@ -99,12 +103,12 @@ public class DemoApi extends Api{
         
         builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
-        return builder;
+        return builder.build();
         
     }
 
     @Override
-    public HttpRequest.Builder vendTransaction(String accessCode, String transRef) {
+    public HttpRequest vendTransaction(String accessCode, String transRef) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_DEMO.concat("/api/transactions/pay")));
@@ -113,7 +117,28 @@ public class DemoApi extends Api{
         
         builder.POST(HttpRequest.BodyPublishers.ofString(new JSONObject().put("transactionReference", transRef).toString()));
         
-        return builder;
+        return builder.build();
+    }
+
+    @Override
+    public HttpRequest rebuidRequestWithNewAuthToken(HttpRequest oldRequest, String accessCode) {
+        URI uri = oldRequest.uri();
+        Map<String, List<String>> headers = oldRequest.headers().map();
+        Optional<HttpRequest.BodyPublisher> bodyPublisher = oldRequest.bodyPublisher();
+        String httpMethod = oldRequest.method();
+        
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+        builder.uri(uri);
+        headers.keySet().forEach(headerName -> {
+            if(headerName.equals(AUTHORIZATION)){
+                builder.header(headerName, accessCode);
+            } else{
+                builder.header(headerName, headers.get(headerName).get(0));
+            }
+        });
+        builder.method(httpMethod, bodyPublisher.orElse(HttpRequest.BodyPublishers.noBody()));
+        
+        return builder.build();
     }
     
 }
