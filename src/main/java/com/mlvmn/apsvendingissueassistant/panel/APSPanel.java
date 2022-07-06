@@ -1336,7 +1336,6 @@ public class APSPanel extends javax.swing.JFrame {
 
     private Optional backgroundWorker(String action, Object payLoad) throws HeadlessException {
         boolean retry = false;
-        Optional result = null;
 
         do {
 
@@ -1435,25 +1434,21 @@ public class APSPanel extends javax.swing.JFrame {
             jDialogLoading.setVisible(true);
 
             try {
-                result = worker.get();
-
-                retry = false;
-
-            } catch (InterruptedException | ExecutionException ex) {
+                return worker.get();
+                
+            } catch (InterruptedException | ExecutionException | CancellationException ex) {
 
                 if (ex.getCause() instanceof IOException) {
                     retry = shouldRetry("A Network Error Occurred!");
                 } else if (ex.getCause() instanceof InterruptedException) {
                     retry = shouldRetry("The current task was interrupted!");
                 } else if (ex.getCause() instanceof CancellationException) {
-                    jTextArea1.setText("The task was cancelled");
-                } else {
-                    retry = shouldRetry(ex.getMessage());
+                    retry = shouldRetry("The task was cancelled");
                 }
             }
         } while (retry);
 
-        return result;
+        return Optional.empty();
     }
 
     /**
