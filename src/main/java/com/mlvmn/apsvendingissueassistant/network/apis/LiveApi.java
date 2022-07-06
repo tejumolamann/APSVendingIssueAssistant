@@ -10,7 +10,10 @@ import static com.mlvmn.apsvendingissueassistant.network.apis.Api.CONTENT_TYPE;
 import com.mlvmn.apsvendingissueassistant.resources.Settings;
 import java.net.URI;
 import java.net.http.HttpRequest;
-import org.json.JSONObject;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -27,8 +30,13 @@ public class LiveApi extends Api{
         machineId = Settings.getSettings().retrieveMachineID();
     }
 
+    /**
+     *
+     * @param credentials the value of credentials
+     * @param loginAuthToken the value of loginAuthToken
+     */
     @Override
-    public HttpRequest login(JSONObject credentials, String loginAuthToken) {
+    public HttpRequest login(JsonObject credentials, String loginAuthToken) {
         //request builder
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
@@ -48,7 +56,7 @@ public class LiveApi extends Api{
     }
 
     @Override
-    public HttpRequest.Builder balance(String accessCode) {
+    public HttpRequest balance(String accessCode) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_LIVE.concat("/api/wallet")));
@@ -59,11 +67,11 @@ public class LiveApi extends Api{
         
         builder.GET();
         
-        return builder;
+        return builder.build();
     }
 
     @Override
-    public HttpRequest.Builder validateMeterNumber(String accessCode, String meterNum) {
+    public HttpRequest validateMeterNumber(String accessCode, String meterNum) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_LIVE.concat("/api/meter")));
@@ -72,16 +80,16 @@ public class LiveApi extends Api{
         builder.setHeader(CONTENT_TYPE, APPLICATION_JSON);
         builder.setHeader(MACHINE, machineId);
         
-        JSONObject body = new JSONObject();
-        body.put(METER_NO, meterNum);
+        JsonObject body = new JsonObject();
+        body.addProperty(METER_NO, meterNum);
         
         builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
-        return builder;
+        return builder.build();
     }
 
     @Override
-    public HttpRequest.Builder newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
+    public HttpRequest newTransaction(String accessCode, String meterNum, double amount, String phoneNum) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_LIVE.concat("/api/transaction")));
@@ -90,18 +98,18 @@ public class LiveApi extends Api{
         builder.setHeader(CONTENT_TYPE, APPLICATION_JSON);
         builder.setHeader(MACHINE, machineId);
         
-        JSONObject body = new JSONObject();
-        body.put(METER_NO, meterNum);
-        body.put("amount", amount);
-        body.put("gsmNo", phoneNum);
+        JsonObject body = new JsonObject();
+        body.addProperty(METER_NO, meterNum);
+        body.addProperty("amount", amount);
+        body.addProperty("gsmNo", phoneNum);
         
         builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
-        return builder;
+        return builder.build();
     }
 
     @Override
-    public HttpRequest.Builder vendTransaction(String accessCode, String transRef) {
+    public HttpRequest vendTransaction(String accessCode, String transRef) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         
         builder.uri(URI.create(HOST_LIVE.concat("/api/transaction/pay")));
@@ -110,9 +118,32 @@ public class LiveApi extends Api{
         builder.header(CONTENT_TYPE, APPLICATION_JSON);
         builder.setHeader(MACHINE, machineId);
         
-        builder.POST(HttpRequest.BodyPublishers.ofString(new JSONObject().put("transactionReference", transRef).toString()));
+        JsonObject body = new JsonObject();
+        body.addProperty("transactionReference", transRef);
         
-        return builder;
+        builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
+        
+        return builder.build();
     }
-    
+
+    @Override
+    public HttpRequest rebuidRequestWithNewAuthToken(HttpRequest oldRequest, String accessCode) {
+        URI uri = oldRequest.uri();
+        Map<String, List<String>> headers = oldRequest.headers().map();
+        Optional<HttpRequest.BodyPublisher> bodyPublisher = oldRequest.bodyPublisher();
+        String httpMethod = oldRequest.method();
+        
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+        builder.uri(uri);
+        headers.keySet().forEach(headerName -> {
+            if(headerName.equals(AUTHORIZATION)){
+                builder.header(headerName, accessCode);
+            } else{
+                builder.header(headerName, headers.get(headerName).get(0));
+            }
+        });
+        builder.method(httpMethod, bodyPublisher.orElse(HttpRequest.BodyPublishers.noBody()));
+        
+        return builder.build();
+    }
 }

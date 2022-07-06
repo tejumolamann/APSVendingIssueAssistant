@@ -9,22 +9,23 @@ import com.mlvmn.apsvendingissueassistant.engine.VendControl;
 import com.mlvmn.apsvendingissueassistant.printing.PrintingService;
 import com.mlvmn.apsvendingissueassistant.resources.Receipt;
 import com.mlvmn.apsvendingissueassistant.resources.Settings;
+import com.mlvmn.apsvendingissueassistant.vending.BalanceSummary;
+import com.mlvmn.apsvendingissueassistant.vending.Meter;
+import com.mlvmn.apsvendingissueassistant.vending.NewTransaction;
+import com.mlvmn.apsvendingissueassistant.vending.PaidTransaction;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  *
@@ -46,7 +47,7 @@ public class APSPanel extends javax.swing.JFrame {
      * SwingWorker to take care of tasks in the background and allow smooth GUI
      * experience.
      */
-    private SwingWorker<String, Void> worker;
+    private SwingWorker<Optional, Void> worker;
 
     //Action commands 
     private static final String WALLET_ACTION_COMMAND = "wallet";
@@ -54,12 +55,12 @@ public class APSPanel extends javax.swing.JFrame {
     private static final String VEND_TRANSACTION_REFERENCE_ACTION_COMMAND = "vendTransactionReference";
     private static final String NEW_TRANSACTION_ACTION_COMMAND = "newTransaction";
     private static final String PAY_TRANSACTION_ACTION_COMMAND = "payTransaction";
-    
+
     /**
      * An array of the names of the printers installed on the local computer.
      */
     private static String[] printerNames;
-    
+
     /**
      * Variable to hold the receipt for a vend.
      */
@@ -73,7 +74,7 @@ public class APSPanel extends javax.swing.JFrame {
         //Initialize objects for vend control and settings
         vc = VendControl.getInstance();
         vs = Settings.getSettings();
-        
+
         //Retrieve all the names of the printers installed on the local computer
         printerNames = PrintingService.getAllInstalledPrinterNames();
 
@@ -1323,20 +1324,19 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldServiceChargeActionPerformed
 
     private void jButtonGetBalanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGetBalanceActionPerformed
-        String result = backgroundWorker(evt.getActionCommand(), null);
+        Optional result = backgroundWorker(evt.getActionCommand(), null);
 
-        try {
-            Receipt receipt = new Receipt(new JSONObject(result));
-            result = receipt.printBalanceToScreen();
-        } catch (JSONException jSONException) {
-        }
+        result.ifPresent((t) -> {
+            BalanceSummary balance = (BalanceSummary) t;
 
-        jTextArea1.setText(result);
+            Receipt receipt = new Receipt(balance);
+            jTextArea1.setText(receipt.sendBalanceSummaryToScreen());
+        });
     }//GEN-LAST:event_jButtonGetBalanceActionPerformed
 
-    private String backgroundWorker(String action, Object payLoad) throws HeadlessException, JSONException {
+    private Optional backgroundWorker(String action, Object payLoad) throws HeadlessException {
         boolean retry = false;
-        String result = "";
+        Optional result = null;
 
         do {
 
@@ -1344,10 +1344,10 @@ public class APSPanel extends javax.swing.JFrame {
                 case WALLET_ACTION_COMMAND:
                     worker = new SwingWorker() {
                         @Override
-                        protected String doInBackground() throws Exception {
-                            String balance = vc.getBalance();
+                        protected Optional doInBackground() throws Exception {
+                            BalanceSummary balance = vc.getBalance();
 
-                            return balance;
+                            return Optional.of(balance);
                         }
 
                         @Override
@@ -1361,10 +1361,10 @@ public class APSPanel extends javax.swing.JFrame {
                 case VALIDATE_METER_ACTION_COMMAND:
                     worker = new SwingWorker() {
                         @Override
-                        protected String doInBackground() throws Exception {
-                            String meterDetails = vc.validateMeterNumber(payLoad.toString());
+                        protected Optional doInBackground() throws Exception {
+                            Meter meterDetails = vc.validateMeterNumber(payLoad.toString());
 
-                            return meterDetails;
+                            return Optional.of(meterDetails);
                         }
 
                         @Override
@@ -1377,33 +1377,30 @@ public class APSPanel extends javax.swing.JFrame {
                 case NEW_TRANSACTION_ACTION_COMMAND:
                     worker = new SwingWorker() {
                         @Override
-                        protected String doInBackground() throws Exception {
+                        protected Optional doInBackground() throws Exception {
                             String[] data = (String[]) payLoad;
 
-                            String transaction = vc.newTransaction(data[0], Double.parseDouble(data[1]), data[2]);
+                            NewTransaction transaction = vc.newTransaction(data[0], Double.parseDouble(data[1]), data[2], false);
 
-                            //check if Access Power returned an error
-                            if (vc.isError(transaction)) {
-                                
-                                //check if the error means the meter number was changed
-                                if (vc.getErrorMessage(transaction).equals("There was an error loading your customer info. Please try again")) {
-                                    
-                                    //validate the meter number
-                                    String meterDetails = vc.validateMeterNumber(data[0]);
+                            return Optional.of(transaction);
+                        }
 
-                                    //check if there is no error with validating the meter number
-                                    if (!vc.isError(meterDetails)) {
-                                        transaction = vc.newTransaction(data[0], Double.parseDouble(data[1]), data[2]);
-                                    } else {    //if there is an error
-                                        
-                                        //Send the results for error processing and let the customer decide
-                                        //what to do
-                                        transaction = meterDetails;
-                                    }
-                                }
-                            }
+                        @Override
+                        protected void done() {
+                            jDialogLoading.setVisible(false);
+                        }
+                    };
+                    break;
 
-                            return transaction;
+                case VEND_TRANSACTION_REFERENCE_ACTION_COMMAND:
+                    worker = new SwingWorker() {
+                        @Override
+                        protected Optional doInBackground() throws Exception {
+                            String transRef = payLoad.toString();
+
+                            PaidTransaction paidTrans = vc.vendTransaction(transRef);
+
+                            return Optional.of(paidTrans);
                         }
 
                         @Override
@@ -1416,12 +1413,12 @@ public class APSPanel extends javax.swing.JFrame {
                 case PAY_TRANSACTION_ACTION_COMMAND:
                     worker = new SwingWorker() {
                         @Override
-                        protected String doInBackground() throws Exception {
-                            String transRef = payLoad.toString();
+                        protected Optional doInBackground() throws Exception {
+                            NewTransaction transaction = (NewTransaction) payLoad;
 
-                            String paidTrans = vc.vendTransaction(transRef);
+                            PaidTransaction paidTrans = vc.vendTransaction(transaction);
 
-                            return paidTrans;
+                            return Optional.of(paidTrans);
                         }
 
                         @Override
@@ -1440,24 +1437,18 @@ public class APSPanel extends javax.swing.JFrame {
             try {
                 result = worker.get();
 
-                if (vc.isError(result)) {
-                    retry = shouldRetry(vc.getErrorMessage(result));
-                } else {
-                    retry = false;
+                retry = false;
 
-                }
-            } catch (InterruptedException | ExecutionException | CancellationException | JSONException ex) {
+            } catch (InterruptedException | ExecutionException ex) {
 
                 if (ex.getCause() instanceof IOException) {
                     retry = shouldRetry("A Network Error Occurred!");
                 } else if (ex.getCause() instanceof InterruptedException) {
                     retry = shouldRetry("The current task was interrupted!");
                 } else if (ex.getCause() instanceof CancellationException) {
-                    result = "The task was cancelled";
-                } else if (ex.getCause() instanceof JSONException) {
-                    retry = shouldRetry("Access Power did not communicate in the proper way!");
+                    jTextArea1.setText("The task was cancelled");
                 } else {
-                    retry = shouldRetry("Uknown Error!");
+                    retry = shouldRetry(ex.getMessage());
                 }
             }
         } while (retry);
@@ -1507,45 +1498,32 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogValidateMeterNum.setVisible(false);
 
         if (evt.getActionCommand().equals(VALIDATE_METER_ACTION_COMMAND)) {
-            String details = backgroundWorker(VALIDATE_METER_ACTION_COMMAND, meterNum);
 
-            try {
-                Receipt receipt = new Receipt(new JSONObject(details));
+            Optional optional = backgroundWorker(VALIDATE_METER_ACTION_COMMAND, meterNum);
 
-                details = receipt.printMeterDetailsToScreen();
+            optional.ifPresent((t) -> {
+                Meter meter = (Meter) t;
 
-                jTextArea1.setText(details);
-            } catch (JSONException jSONException) {
-                Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, jSONException);
-            }
+                Receipt receipt = new Receipt(meter);
+                jTextArea1.setText(receipt.sendMeterDetailsToScreen());
+            });
+
         } else if (evt.getActionCommand().equals(VEND_TRANSACTION_REFERENCE_ACTION_COMMAND)) {
-            String vendDetails = backgroundWorker(PAY_TRANSACTION_ACTION_COMMAND, meterNum);
+            Optional vendDetails = backgroundWorker(PAY_TRANSACTION_ACTION_COMMAND, meterNum);
 
-            try {
-                Receipt receipt = new Receipt(new JSONObject(vendDetails));
+            vendDetails.ifPresent((t) -> {
+                PaidTransaction paidTransaction = (PaidTransaction) t;
 
-                vendDetails = receipt.printVendToScreen(false);
-
-                jTextArea1.setText(vendDetails);
-            } catch (JSONException jSONException) {
-                Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, jSONException);
-            }
+                Receipt receipt = new Receipt(paidTransaction);
+                jTextArea1.setText(receipt.sendPaidTransactionToScreen());
+            });
         }
     }//GEN-LAST:event_jButtonValidateMeterNumActionPerformed
 
     private void jButtonGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateActionPerformed
         String amount, meterNo, phoneNo;
 
-        boolean serviceChargeIsApplied = jCheckBoxServiceCharge.isSelected();
-
-        if (serviceChargeIsApplied) {
-            amount = String.valueOf(
-                    Double.parseDouble(jTextFieldPreviewAmount.getText())
-                    - Double.parseDouble(vs.retrieveServiceCharge())
-            );
-        } else {
-            amount = jTextFieldPreviewAmount.getText();
-        }
+        amount = jTextFieldPreviewAmount.getText();
 
         meterNo = jTextFieldPreviewMeterNum.getText();
         phoneNo = jTextFieldPreviewPhoneNum.getText();
@@ -1560,35 +1538,30 @@ public class APSPanel extends javax.swing.JFrame {
 
         //Create a new transaction, either a preview or vend command a new transaction 
         //must be created.
-        try {
+        Optional optional = backgroundWorker(NEW_TRANSACTION_ACTION_COMMAND, data);
 
-            //new transaction
-            String createdTransaction = backgroundWorker(NEW_TRANSACTION_ACTION_COMMAND, data);
+        optional.ifPresent((t) -> {
 
-            //When the action command is to vend
-            if (!evt.getActionCommand().equals(PAY_TRANSACTION_ACTION_COMMAND)) {    //otherwise the action command will be just to preview
+            NewTransaction newTransaction = (NewTransaction) t;
 
-                vendReceipt = new Receipt(new JSONObject(createdTransaction));
-                
-                jTextArea1.setText(vendReceipt.printTransactionToScreen(serviceChargeIsApplied));
-            } else {
-                
-                //Get a transaction reference
-                String transRef = new JSONObject(createdTransaction).getString("transactionReference");
+            if (evt.getActionCommand().equals(PAY_TRANSACTION_ACTION_COMMAND)) {
 
                 //Do the vend
-                String vendedTrans = backgroundWorker(PAY_TRANSACTION_ACTION_COMMAND, transRef);
+                Optional vendedTrans = backgroundWorker(PAY_TRANSACTION_ACTION_COMMAND, newTransaction);
 
-                //Check for error
-                if (!vc.isError(vendedTrans)) {
-                    vendReceipt = new Receipt(new JSONObject(vendedTrans));
+                vendedTrans.ifPresent((v) -> {
+                    PaidTransaction paidTransaction = (PaidTransaction) v;
 
-                    jTextArea1.setText(vendReceipt.printVendToScreen(serviceChargeIsApplied));
-                }
+                    Receipt receipt = new Receipt(paidTransaction);
+                    receipt.sendPaidTransactionToScreen();
+                });
+
+            } else {
+                Receipt receipt = new Receipt(newTransaction);
+                jTextArea1.setText(receipt.sendNewTransactionToScreen());
             }
-        } catch (JSONException jSONException) {
-            JOptionPane.showMessageDialog(this, "Error: " + jSONException.getLocalizedMessage(), "Error interpreting data!", JOptionPane.ERROR_MESSAGE);
-        }
+
+        });
     }//GEN-LAST:event_jButtonGenerateActionPerformed
 
     private void jTextFieldPreviewMeterNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewMeterNumKeyTyped
@@ -1672,14 +1645,14 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelPrintActionPerformed
 
     private void jButtonPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPrintActionPerformed
-        if(vendReceipt == null){
+        if (vendReceipt == null) {
             JOptionPane.showMessageDialog(
-                    this, 
-                    "There was no vend performed.\n\nDo a vend and try again.", 
-                    "No Vend", 
+                    this,
+                    "There was no vend performed.\n\nDo a vend and try again.",
+                    "No Vend",
                     JOptionPane.WARNING_MESSAGE
             );
-        } else{
+        } else {
             String printerName = (String) jComboBoxPrinterNames.getSelectedItem();
 
             try {

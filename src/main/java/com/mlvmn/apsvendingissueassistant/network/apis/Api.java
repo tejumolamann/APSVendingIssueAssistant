@@ -5,7 +5,7 @@
 package com.mlvmn.apsvendingissueassistant.network.apis;
 
 import java.net.http.HttpRequest;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -23,13 +23,11 @@ public abstract class Api {
     }
     
     /**
-     * Abstract method that is overridden by the demo and live end points and 
-     * it is for the login endpoint.
-     * @param credentials
-     * @param loginAuthToken
-     * @return HttpRequest object representing the request of the API's request
+     * @param credentials the value of credentials
+     * @param loginAuthToken the value of loginAuthToken
+     * @return HttpRequest
      */
-    abstract public HttpRequest login(JSONObject credentials, String loginAuthToken);
+    abstract public HttpRequest login(JsonObject credentials, String loginAuthToken);
     
     /**
      * This abstract method is overridden by the Demo and Live APIs, and the 

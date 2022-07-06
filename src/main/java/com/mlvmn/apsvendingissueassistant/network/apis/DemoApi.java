@@ -10,7 +10,7 @@ import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -27,13 +27,11 @@ public class DemoApi extends Api{
     }
 
     /**
-     * This method creates the HttpRequest object for the login end point.
-     * @param credentials JSONObject of the username and password
-     * @param loginAuthToken String characters supplied by Access Power Systems
-     * @return HttpRequest object
+     * @param credentials the value of credentials
+     * @param loginAuthToken the value of loginAuthToken
      */
     @Override
-    public HttpRequest login(JSONObject credentials, String loginAuthToken) {
+    public HttpRequest login(com.google.gson.JsonObject credentials, String loginAuthToken) {
         
         //request builder
         HttpRequest.Builder builder = HttpRequest.newBuilder();
@@ -79,8 +77,8 @@ public class DemoApi extends Api{
         builder.setHeader(AUTHORIZATION, accessCode);
         builder.setHeader(CONTENT_TYPE, APPLICATION_JSON);
         
-        JSONObject body = new JSONObject();
-        body.put(METER_NO, meterNum);
+        JsonObject body = new JsonObject();
+        body.addProperty(METER_NO, meterNum);
         
         builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
@@ -96,10 +94,10 @@ public class DemoApi extends Api{
         builder.setHeader(AUTHORIZATION, accessCode);
         builder.setHeader(CONTENT_TYPE, APPLICATION_JSON);
         
-        JSONObject body = new JSONObject();
-        body.put(METER_NO, meterNum);
-        body.put("amount", amount);
-        body.put("gsmNo", phoneNum);
+        JsonObject body = new JsonObject();
+        body.addProperty(METER_NO, meterNum);
+        body.addProperty("amount", amount);
+        body.addProperty("gsmNo", phoneNum);
         
         builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
@@ -115,7 +113,10 @@ public class DemoApi extends Api{
         builder.header(AUTHORIZATION, accessCode);
         builder.header(CONTENT_TYPE, APPLICATION_JSON);
         
-        builder.POST(HttpRequest.BodyPublishers.ofString(new JSONObject().put("transactionReference", transRef).toString()));
+        JsonObject body = new JsonObject();
+        body.addProperty("transactionReference", transRef);
+        
+        builder.POST(HttpRequest.BodyPublishers.ofString(body.toString()));
         
         return builder.build();
     }

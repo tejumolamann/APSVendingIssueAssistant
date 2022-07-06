@@ -6,9 +6,13 @@
 package com.mlvmn.apsvendingissueassistant.resources;
 
 import com.mlvmn.apsvendingissueassistant.printing.PrintingService;
+import com.mlvmn.apsvendingissueassistant.vending.BalanceSummary;
+import com.mlvmn.apsvendingissueassistant.vending.Meter;
+import com.mlvmn.apsvendingissueassistant.vending.NewTransaction;
+import com.mlvmn.apsvendingissueassistant.vending.OutstandingCharges;
+import com.mlvmn.apsvendingissueassistant.vending.PaidTransaction;
 import java.io.IOException;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.Objects;
 
 /**
  *
@@ -36,26 +40,75 @@ public class Receipt {
     private static final String OUTSTANDING_BALANCE = "Outstanding balance: ₦";
     private static final String OUTSTANDING_DESCRIPTION = "Outstanding description: ";
     
-    /*JSON Keys*/
-    private static final String METER_NO = "meterNo";
-    private static final String TRANSACTION_REFERENCE = "transactionReference";
-    private static final String PHONE_NO = "transactionGsmNo";
-    private static final String OUTSTANDING_CHARGES = "outstandingCharges";
-    private static final String OUTSTANDING_CHARGES_NET = "outstandingChargesNet";
-    private static final String UNITS_TAX = "unitsTax";
-    private static final String UNITS_GROSS = "unitsGross";
-    private static final String UNITS = "units";
-    private static final String TOTAL_AMOUNT = "totalAmount";
-    private static final String METER_TYPE = "meterType";
-    private static final String ADDRESS = "address";
-    private static final String CUSTOMER_NAME = "customerName";
-    private static final String OUTSTANDING_TYPE = "type";
     
+    private NewTransaction newTransaction;
+    private Meter meter;
+    private BalanceSummary balSummary;
+    private PaidTransaction paidTransaction;
     
-    private final JSONObject jsonResponse;
+    public Receipt(Meter aMeter){
+        this.meter = aMeter;
+    }
+    
+    public Receipt(BalanceSummary balance){
+        this.balSummary = balance;
+    }
 
-    public Receipt(JSONObject jsonResponse) {
-        this.jsonResponse = jsonResponse;
+    public Receipt(PaidTransaction paidTransaction) {
+        this.paidTransaction = paidTransaction;
+    }
+
+    public Receipt(NewTransaction newTransaction) {
+        this.newTransaction = newTransaction;
+    }
+    
+    public String sendMeterDetailsToScreen(){
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(METER__NUMBER);
+        sb.append(this.meter.getMeterNo());
+        
+        sb.append(SCREEN_NEW_LINE);
+        
+        sb.append(METER__REGISTERED_TO);
+        sb.append(this.meter.getCustomerName());
+        
+        sb.append(SCREEN_NEW_LINE);
+        
+        sb.append(CUSTOMER__ADDRESS);
+        sb.append(this.meter.getAddress());
+        
+        sb.append(SCREEN_NEW_LINE);
+        
+        sb.append("Registered Phone Number: ");
+        sb.append(this.meter.getPhoneNo());
+        
+        sb.append(SCREEN_NEW_LINE);
+        
+        sb.append("Registered Email: ");
+        sb.append(this.meter.getEmail());
+        
+        sb.append(SCREEN_NEW_LINE);
+        
+        sb.append("Type of Meter: ");
+        sb.append(this.meter.getMeterType());
+        
+        sb.append(SCREEN_NEW_LINE);
+        
+        sb.append("Tariff: ");
+        sb.append(this.meter.getUnitRate());
+        
+        sb.append(SCREEN_NEW_LINE);
+        
+        sb.append("Debt Balance: ₦");
+        sb.append(this.meter.getAccountBalance());
+        
+        sb.append(SCREEN_NEW_LINE);
+        
+        sb.append("Minimum Vend Payment: ₦");
+        sb.append(this.meter.getMinimumPurchase());
+        
+        return sb.toString();
     }
     
     /**
@@ -63,276 +116,211 @@ public class Receipt {
      * wallet balance into human understandable format.
      * @return String
      */
-    public String printBalanceToScreen(){
+    public String sendBalanceSummaryToScreen(){
         StringBuilder sb = new StringBuilder();
         
         sb.append("Total Credits: ₦");
-        sb.append(this.jsonResponse.getDouble("totalCredit"));
+        sb.append(this.balSummary.getTotalCredit());
         sb.append(SCREEN_NEW_LINE);
         sb.append("Total Amount of Vends: ₦");
-        sb.append(this.jsonResponse.getDouble("totalDebit"));
+        sb.append(this.balSummary.getTotalDebit());
         sb.append(SCREEN_NEW_LINE);
         sb.append("Current Balance: ₦");
-        sb.append(this.jsonResponse.getDouble("currentBalance"));
+        sb.append(this.balSummary.getCurrentBalance());
         
         return sb.toString();
     }
 
     /**
-     *
-     * @return
-     */
-    public String printMeterDetailsToScreen() {
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append(METER__NUMBER);
-        sb.append(this.jsonResponse.getString(METER_NO));
-        
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append(METER__REGISTERED_TO);
-        sb.append(this.jsonResponse.getString(CUSTOMER_NAME));
-        
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append(CUSTOMER__ADDRESS);
-        sb.append(this.jsonResponse.getString(ADDRESS));
-        
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append("Registered Phone Number: ");
-        sb.append(this.jsonResponse.getString("phoneNo"));
-        
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append("Registered Email: ");
-        sb.append(this.jsonResponse.getString("email"));
-        
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append("Type of Meter: ");
-        sb.append(this.jsonResponse.getString("meterType"));
-        
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append("Tariff: ");
-        sb.append(this.jsonResponse.getDouble("unitRate"));
-        
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append("Debt Balance: ₦");
-        sb.append(this.jsonResponse.getDouble("accountBalance"));
-        
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append("Minimum Vend Payment: ₦");
-        sb.append(this.jsonResponse.getDouble("minimumPurchase"));
-        
-        return sb.toString();
-    }    
-
-    /**
-     * This method returns a String that represents the information from a new 
-     * transaction, but only in human understandable format, and it can be used 
-     * to display on a screen as the result of the new transaction
      * 
-     * @param appliedServiceCharge true if a service charge was applied and false
-     * if it wasn't
-     * @return String formatted from JSON that depicts details of the new transaction.
+     * @return 
      */
-    public String printTransactionToScreen(boolean appliedServiceCharge) {
+    public String sendNewTransactionToScreen() {
         StringBuilder sb = new StringBuilder();
         
-        JSONObject meterInfo = this.jsonResponse.getJSONObject("customerMeterInfo");
+        NewTransaction aNewTransaction = this.newTransaction;
         
-        sb.append(TRANSACTION__REFERENCE_)
-                .append(this.jsonResponse.getString(TRANSACTION_REFERENCE))
-                .append(SCREEN_NEW_LINE);
+        Meter meterInfo = aNewTransaction.getCustomerMeterInfo();
         
         sb.append(METER__NUMBER)
-                .append(meterInfo.getString(METER_NO))
+                .append(meterInfo.getMeterNo())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(METER__REGISTERED_TO)
-                .append(meterInfo.getString(CUSTOMER_NAME))
+                .append(meterInfo.getCustomerName())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(CUSTOMER__ADDRESS)
-                .append(meterInfo.getString(ADDRESS))
+                .append(meterInfo.getAddress())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(PHONE__NUMBER_)
-                .append(this.jsonResponse.getString(PHONE_NO))
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append(AMOUNT__TENDERED)
-                .append(this.jsonResponse.getDouble(TOTAL_AMOUNT))
-                .append(SCREEN_NEW_LINE);
-        
-        //service charge
-        sb.append(SERVICE_CHARGE);
-        if (appliedServiceCharge){
-            sb.append(Settings.getSettings().retrieveServiceCharge());
-        } else {
-            sb.append("0.0");
-        }
-        sb.append(SCREEN_NEW_LINE);
-        
-        sb.append("Units onbtainable: ")
-                .append(this.jsonResponse.getDouble("units"))
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append("Value of units: ₦")
-                .append(this.jsonResponse.getDouble("unitsGross"))
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append("Tax: ₦")
-                .append(this.jsonResponse.getDouble("unitsTax"))
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append(DEBT_DEDUCTION)
-                .append(this.jsonResponse.getDouble("outstandingChargesNet"))
-                .append(SCREEN_NEW_LINE);
-        
-        if (!this.jsonResponse.isNull(OUTSTANDING_CHARGES)) {
-            JSONArray outstandingArray = this.jsonResponse.getJSONArray(OUTSTANDING_CHARGES);
-            
-            if (outstandingArray.length() != 0) {
-                
-                JSONObject outstandingDetails = outstandingArray.getJSONObject(0);
-                
-                sb.append(OUTSTANDING_DESCRIPTION)
-                        .append(outstandingDetails.getString(OUTSTANDING_TYPE))
-                        .append(SCREEN_NEW_LINE);
-                
-                sb.append(OUTSTANDING_BALANCE)
-                        .append(outstandingDetails.getDouble("currentOutstandingBalance"))
-                        .append(SCREEN_NEW_LINE);
-                
-                sb.append("Debt to be deducted: ₦")
-                        .append(outstandingDetails.getDouble("amountPaying"))
-                        .append(SCREEN_NEW_LINE);
-                
-                sb.append("Percentage deduction: %")
-                        .append(outstandingDetails.getDouble("percentPaying"))
-                        .append(SCREEN_NEW_LINE);
-            }
-        }
-        
-        sb.append("Date: ")
-                .append(this.jsonResponse.getString("transactionDate"))
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append("Time: ")
-                .append(this.jsonResponse.getString("transactionTime"))
-                .append(SCREEN_NEW_LINE);
-        
-        return sb.toString();
-    }
-
-    /**
-     * This method formats the JSON response for a successful vend into understandable 
-     * format which can be displayed on the screen.
-     * @param appliedServiceCharge boolean, true if a service charge was applied, 
-     * false otherwise.
-     * @return String
-     */
-    public String printVendToScreen(boolean appliedServiceCharge) {
-        StringBuilder sb = new StringBuilder();
-        
-        JSONObject meterInfo = this.jsonResponse.getJSONObject("customerMeterInfo");
-        
-        sb.append(METER__NUMBER)
-                .append(meterInfo.getString(METER_NO))
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append(METER__REGISTERED_TO)
-                .append(meterInfo.getString(CUSTOMER_NAME))
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append(CUSTOMER__ADDRESS)
-                .append(meterInfo.getString(ADDRESS))
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append(PHONE__NUMBER_)
-                .append(this.jsonResponse.getString(PHONE_NO))
+                .append(aNewTransaction.getTransactionGsmNo())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(TRANSACTION__REFERENCE_)
-                .append(this.jsonResponse.getString(TRANSACTION_REFERENCE))
+                .append(aNewTransaction.getTransactionReference())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(TYPE_OF__METER)
-                .append(meterInfo.getString(METER_TYPE))
+                .append(meterInfo.getMeterType())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(AMOUNT__TENDERED)
-                .append(this.jsonResponse.getDouble(TOTAL_AMOUNT))
+                .append(aNewTransaction.getTotalAmount())
                 .append(SCREEN_NEW_LINE);
         
         //service charge
-        sb.append(SERVICE_CHARGE);
-        if (appliedServiceCharge){
-            sb.append(Settings.getSettings().retrieveServiceCharge());
-        } else {
-            sb.append("0.0");
-        }
-        sb.append(SCREEN_NEW_LINE);
+        sb.append(SERVICE_CHARGE)
+                .append(aNewTransaction.getServiceCharge())
+                .append(SCREEN_NEW_LINE);
         
         
         sb.append(UNITS_ONBTAINABLE_)
-                .append(this.jsonResponse.getDouble(UNITS))
+                .append(aNewTransaction.getUnits())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(VALUE_OF_UNITS)
-                .append(this.jsonResponse.getDouble(UNITS_GROSS))
+                .append(aNewTransaction.getUnitsGross())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(TAX)
-                .append(this.jsonResponse.getDouble(UNITS_TAX))
+                .append(aNewTransaction.getUnitsTax())
                 .append(SCREEN_NEW_LINE);
         
         sb.append(DEBT_DEDUCTION)
-                .append(this.jsonResponse.getDouble(OUTSTANDING_CHARGES_NET))
+                .append(aNewTransaction.getOutstandingCharges())
                 .append(SCREEN_NEW_LINE);        
         
-        if(!this.jsonResponse.isNull(OUTSTANDING_CHARGES)){
+        if(Objects.nonNull(aNewTransaction.getOutstandingCharges())){
             
-            JSONArray outstandingArray = this.jsonResponse.getJSONArray(OUTSTANDING_CHARGES);
+            OutstandingCharges[] outstandingChargesArray = aNewTransaction.getOutstandingCharges();
             
-            if (outstandingArray.length() != 0) {
-                JSONObject outstandingDetails = outstandingArray.getJSONObject(0);
+            for (OutstandingCharges outstandingCharges : outstandingChargesArray) {
                 
                 sb.append(OUTSTANDING_DESCRIPTION)
-                        .append(outstandingDetails.getString(OUTSTANDING_TYPE))
+                        .append(outstandingCharges.getType())
                         .append(SCREEN_NEW_LINE);
                 
                 sb.append(OUTSTANDING_BALANCE)
-                        .append(outstandingDetails.getDouble("currentOutstandingBalance"))
+                        .append(outstandingCharges.getCurrentOutstandingBalance())
                         .append(SCREEN_NEW_LINE);
                 
                 sb.append("Debt deducted: ₦")
-                        .append(outstandingDetails.getDouble("amountPaying"))
+                        .append(outstandingCharges.getAmountPaying())
                         .append(SCREEN_NEW_LINE);
                 
                 sb.append("Percentage deducted: %")
-                        .append(outstandingDetails.getDouble("percentPaying"))
+                        .append(outstandingCharges.getPercentPaying())
                         .append(SCREEN_NEW_LINE);
             }
         }
         
         sb.append("Date: ")
-                .append(this.jsonResponse.getString("paymentDate"))
+                .append(aNewTransaction.getTransactionDate())
                 .append(SCREEN_NEW_LINE);
         
         sb.append("Time: ")
-                .append(this.jsonResponse.getString("paymentTime"))
+                .append(aNewTransaction.getTransactionTime())
+                .append(SCREEN_NEW_LINE);
+        
+        return sb.toString();
+    }
+
+    /**
+     * @return 
+     */
+    public String sendPaidTransactionToScreen() {
+        StringBuilder sb = new StringBuilder();
+        
+        Meter meterInfo = this.paidTransaction.getCustomerMeterInfo();
+        
+        sb.append(METER__NUMBER)
+                .append(meterInfo.getMeterNo())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(METER__REGISTERED_TO)
+                .append(meterInfo.getCustomerName())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(CUSTOMER__ADDRESS)
+                .append(meterInfo.getAddress())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(PHONE__NUMBER_)
+                .append(this.paidTransaction.getTransactionGsmNo())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(TRANSACTION__REFERENCE_)
+                .append(this.paidTransaction.getTransactionReference())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(TYPE_OF__METER)
+                .append(meterInfo.getMeterType())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(AMOUNT__TENDERED)
+                .append(this.paidTransaction.getTotalAmount())
+                .append(SCREEN_NEW_LINE);
+        
+        //service charge
+        sb.append(SERVICE_CHARGE)
+                .append(this.paidTransaction.getServiceCharge())
+                .append(SCREEN_NEW_LINE);
+        
+        
+        sb.append(UNITS_ONBTAINABLE_)
+                .append(this.paidTransaction.getUnits())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(VALUE_OF_UNITS)
+                .append(this.paidTransaction.getUnitsGross())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(TAX)
+                .append(this.paidTransaction.getUnitsTax())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append(DEBT_DEDUCTION)
+                .append(this.paidTransaction.getOutstandingCharges())
+                .append(SCREEN_NEW_LINE);        
+        
+        if(Objects.nonNull(this.paidTransaction.getOutstandingCharges())){
+            
+            OutstandingCharges[] outstandingChargesArray = this.paidTransaction.getOutstandingCharges();
+            
+            for (OutstandingCharges outstandingCharges : outstandingChargesArray) {
+                
+                sb.append(OUTSTANDING_DESCRIPTION)
+                        .append(outstandingCharges.getType())
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append(OUTSTANDING_BALANCE)
+                        .append(outstandingCharges.getCurrentOutstandingBalance())
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append("Debt deducted: ₦")
+                        .append(outstandingCharges.getAmountPaying())
+                        .append(SCREEN_NEW_LINE);
+                
+                sb.append("Percentage deducted: %")
+                        .append(outstandingCharges.getPercentPaying())
+                        .append(SCREEN_NEW_LINE);
+            }
+        }
+        
+        sb.append("Date: ")
+                .append(this.paidTransaction.getPaymentDate())
+                .append(SCREEN_NEW_LINE);
+        
+        sb.append("Time: ")
+                .append(this.paidTransaction.getPaymentTime())
                 .append(SCREEN_NEW_LINE);
         
         sb.append("TOKEN: ");
         
-        if (this.jsonResponse.getString("token") != null){
-            sb.append(this.jsonResponse.getString("token"));
+        if (Objects.nonNull(this.paidTransaction.getToken())){
+            sb.append(this.paidTransaction.getToken());
         } else {
             sb.append("\n");
         }
@@ -343,15 +331,15 @@ public class Receipt {
     public void sendToPrinter(String printerName) throws IOException{
         String payLoad = new String();
         
-        //For prepaid meter vends
-        if(this.jsonResponse.getString(METER_NO).length() >= 11){
-            
-        }
-        
-        //For postpaid meter vends
-        if(this.jsonResponse.getString(METER_NO).length() < 11){
-            
-        }
+//        //For prepaid meter vends
+//        if(this.jsonResponse.getString(METER_NO).length() >= 11){
+//            
+//        }
+//        
+//        //For postpaid meter vends
+//        if(this.jsonResponse.getString(METER_NO).length() < 11 && this.jsonResponse.getString(TOKEN) == null){
+//            
+//        }
         
         PrintingService.printToThermalPrinter(printerName, payLoad);
     }
