@@ -25,6 +25,15 @@ public class Meter {
     private double unitRate;
     private double accountBalance;
     private double minimumPurchase;
+    private String accountType;
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
 
     public String getAddress() {
         return address;

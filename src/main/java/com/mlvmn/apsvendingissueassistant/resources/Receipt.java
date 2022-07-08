@@ -12,6 +12,7 @@ import com.mlvmn.apsvendingissueassistant.vending.NewTransaction;
 import com.mlvmn.apsvendingissueassistant.vending.OutstandingCharges;
 import com.mlvmn.apsvendingissueassistant.vending.PaidTransaction;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -120,10 +121,10 @@ public class Receipt {
         StringBuilder sb = new StringBuilder();
         
         sb.append("Total Credits: ₦");
-        sb.append(this.balSummary.getTotalCredit());
+        sb.append(new BigDecimal(this.balSummary.getTotalCredit()).toPlainString());
         sb.append(SCREEN_NEW_LINE);
         sb.append("Total Amount of Vends: ₦");
-        sb.append(this.balSummary.getTotalDebit());
+        sb.append(new BigDecimal(this.balSummary.getTotalDebit()).toPlainString());
         sb.append(SCREEN_NEW_LINE);
         sb.append("Current Balance: ₦");
         sb.append(this.balSummary.getCurrentBalance());

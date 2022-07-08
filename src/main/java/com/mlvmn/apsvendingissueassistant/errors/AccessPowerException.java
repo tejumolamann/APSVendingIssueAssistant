@@ -4,21 +4,21 @@
  */
 package com.mlvmn.apsvendingissueassistant.errors;
 
-import com.google.gson.JsonObject;
-import com.mlvmn.apsvendingissueassistant.engine.VendControl;
-
 /**
  *
  * @author tejum
  */
 public class AccessPowerException extends Exception{
     
-    public AccessPowerException(JsonObject jsonError) {
-        super(VendControl.getInstance().getErrorMessage(jsonError));
-    }
+    public static final String NETOWRK_ERROR_MESSAGE = "A network error occurred";
+    public static final String NETWORK_ERROR_INTERRUPTION_MESSAGE = "The netork was interrupted";
 
     public AccessPowerException(String message) {
         super(message);
+    }
+
+    public AccessPowerException(String message, Throwable cause) {
+        super(message, cause);
     }
     
 }

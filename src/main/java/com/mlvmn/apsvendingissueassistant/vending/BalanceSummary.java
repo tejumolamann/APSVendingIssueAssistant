@@ -10,36 +10,35 @@ package com.mlvmn.apsvendingissueassistant.vending;
  */
 public class BalanceSummary extends AccessPowerVending {
 
-    private long totalCredit;
-    private long totalDebit;
-    private long currentBalance;
+    private double totalCredit;
+    private double totalDebit;
+    private double currentBalance;
 
     public BalanceSummary() {
     }
 
-    public long getTotalCredit() {
+    public double getTotalCredit() {
         return totalCredit;
     }
 
-    public void setTotalCredit(long totalCredit) {
+    public void setTotalCredit(double totalCredit) {
         this.totalCredit = totalCredit;
     }
 
-    public long getTotalDebit() {
+    public double getTotalDebit() {
         return totalDebit;
     }
 
-    public void setTotalDebit(long totalDebit) {
+    public void setTotalDebit(double totalDebit) {
         this.totalDebit = totalDebit;
     }
 
-    public long getCurrentBalance() {
+    public double getCurrentBalance() {
         return currentBalance;
     }
 
-    public void setCurrentBalance(long currentBalance) {
+    public void setCurrentBalance(double currentBalance) {
         this.currentBalance = currentBalance;
     }
     
-
 }

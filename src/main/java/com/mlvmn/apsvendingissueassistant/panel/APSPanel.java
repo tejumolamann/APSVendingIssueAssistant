@@ -15,8 +15,6 @@ import com.mlvmn.apsvendingissueassistant.vending.NewTransaction;
 import com.mlvmn.apsvendingissueassistant.vending.PaidTransaction;
 import java.awt.Component;
 import java.awt.HeadlessException;
-import java.awt.TextComponent;
-import java.awt.TextField;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -33,7 +31,6 @@ import java.util.logging.Logger;
 import javax.swing.ButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 /**
@@ -943,6 +940,7 @@ public class APSPanel extends javax.swing.JFrame {
 
         jButtonValidate.setText("Validate");
         jButtonValidate.setToolTipText("Validate Meter Number");
+        jButtonValidate.setActionCommand(VALIDATE_METER_ACTION_COMMAND);
         jButtonValidate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonValidateActionPerformed(evt);
@@ -1157,21 +1155,22 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCancelDemoLiveActionPerformed
 
     private void jButtonValidateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValidateActionPerformed
-        //Action to display valiate meter number dialog window
+        //Action to display valiate meter number dialog window, Components are 
+        //shared when vending transaction reference too.
 
-        //Set or change the properties for the validate button
+        //Set or change the properties for the validate button and label
         jLabelValidateMeterNum.setText("Enter meter number");
         jButtonValidateMeterNum.setText("Validate");
-        jButtonValidateMeterNum.setActionCommand(VALIDATE_METER_ACTION_COMMAND);
         jButtonValidateMeterNum.setToolTipText("Click to validate meter number");
-        jDialogValidateMeterNum.setTitle("Validtate Meter Number");
+        jButtonValidateMeterNum.setActionCommand(VALIDATE_METER_ACTION_COMMAND);
 
         //Set or change the properties for the text field
         jTextFieldValidateMeterNum.setText("");
         jTextFieldValidateMeterNum.setActionCommand(VALIDATE_METER_ACTION_COMMAND);
         jTextFieldValidateMeterNum.requestFocusInWindow();
 
-        //Display the dialog window
+        //Set the title of the dialog and disply it
+        jDialogValidateMeterNum.setTitle("Validtate Meter Number");
         jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonValidateActionPerformed
 
@@ -1271,15 +1270,19 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonVendActionPerformed
 
     private void jButtonVendTrasactionRefActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVendTrasactionRefActionPerformed
+        //This method reuses Compinents from validating meter numbers, the entire 
+        //components in the shown dialog are the same but with different parameters
+
         jLabelValidateMeterNum.setText("Enter transaction reference");
+
         jButtonValidateMeterNum.setText("Vend");
         jButtonValidateMeterNum.setActionCommand(VEND_TRANSACTION_REFERENCE_ACTION_COMMAND);
         jButtonValidateMeterNum.setToolTipText("Click to vend transaction reference");
-        jDialogValidateMeterNum.setTitle("Vend Transaction Reference");
 
         jTextFieldValidateMeterNum.setText("");
         jTextFieldValidateMeterNum.setActionCommand(VEND_TRANSACTION_REFERENCE_ACTION_COMMAND);
 
+        jDialogValidateMeterNum.setTitle("Vend Transaction Reference");
         jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonVendTrasactionRefActionPerformed
 
@@ -1428,7 +1431,11 @@ public class APSPanel extends javax.swing.JFrame {
                         protected Optional doInBackground() throws Exception {
                             String[] data = (String[]) payLoad;
 
-                            NewTransaction transaction = vc.newTransaction(data[0], Double.parseDouble(data[1]), data[2], false);
+                            NewTransaction transaction = vc.newTransaction(
+                                    data[0], 
+                                    Double.parseDouble(data[1]), data[2],
+                                    jCheckBoxServiceCharge.isSelected()
+                            );
 
                             return Optional.of(transaction);
                         }
@@ -1475,25 +1482,36 @@ public class APSPanel extends javax.swing.JFrame {
                         }
                     };
                     break;
-
             }
 
-            worker.execute();
-
-            jDialogLoading.setVisible(true);
-
             try {
-                return worker.get();
+                worker.execute();
+
+                jDialogLoading.setVisible(true);
+
+                if (worker.getState().equals(SwingWorker.StateValue.DONE)) {
+                    return worker.get();
+                }
+
                 
+
             } catch (InterruptedException | ExecutionException | CancellationException ex) {
 
-                if (ex.getCause() instanceof IOException) {
-                    retry = shouldRetry("A Network Error Occurred!");
-                } else if (ex.getCause() instanceof InterruptedException) {
-                    retry = shouldRetry("The current task was interrupted!");
-                } else if (ex.getCause() instanceof CancellationException) {
-                    retry = shouldRetry("The task was cancelled");
+                if (worker.isCancelled()) {
+                    return Optional.empty();
                 }
+
+                retry = shouldRetry(ex.getCause().getMessage());
+
+//                if (ex.getCause() instanceof IOException) {
+//                    retry = shouldRetry("A Network Error Occurred!");
+//                } else if (ex.getCause() instanceof InterruptedException) {
+//                    retry = shouldRetry("The current task was interrupted!");
+//                } else if (ex.getCause() instanceof CancellationException) {
+//                    retry = shouldRetry("The task was cancelled");
+//                } else if (ex.getCause() instanceof ExecutionException){
+//                    retry = shouldRetry(ex.getLocalizedMessage());
+//                }
             }
         } while (retry);
 
@@ -1507,7 +1525,7 @@ public class APSPanel extends javax.swing.JFrame {
     private boolean shouldRetry(String erMessage) throws HeadlessException {
 
         int option = JOptionPane.showOptionDialog(
-                this, erMessage, "Retry?",
+                this, erMessage.concat("\nRetry?"), "An Error Occurred!!!",
                 JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
                 null, null, null);
 
@@ -1537,13 +1555,13 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldMachineIDActionPerformed
 
     private void jButtonValidateMeterNumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValidateMeterNumActionPerformed
-        String meterNum = jTextFieldValidateMeterNum.getText();
+        String meterNumOrTransactionReference = jTextFieldValidateMeterNum.getText();
 
         jDialogValidateMeterNum.setVisible(false);
 
         if (evt.getActionCommand().equals(VALIDATE_METER_ACTION_COMMAND)) {
 
-            Optional optional = backgroundWorker(VALIDATE_METER_ACTION_COMMAND, meterNum);
+            Optional optional = backgroundWorker(VALIDATE_METER_ACTION_COMMAND, meterNumOrTransactionReference);
 
             optional.ifPresent((t) -> {
                 Meter meter = (Meter) t;
@@ -1552,8 +1570,10 @@ public class APSPanel extends javax.swing.JFrame {
                 jTextArea1.setText(receipt.sendMeterDetailsToScreen());
             });
 
-        } else if (evt.getActionCommand().equals(VEND_TRANSACTION_REFERENCE_ACTION_COMMAND)) {
-            Optional vendDetails = backgroundWorker(PAY_TRANSACTION_ACTION_COMMAND, meterNum);
+        }
+
+        if (evt.getActionCommand().equals(VEND_TRANSACTION_REFERENCE_ACTION_COMMAND)) {
+            Optional vendDetails = backgroundWorker(VEND_TRANSACTION_REFERENCE_ACTION_COMMAND, meterNumOrTransactionReference);
 
             vendDetails.ifPresent((t) -> {
                 PaidTransaction paidTransaction = (PaidTransaction) t;
@@ -1582,22 +1602,22 @@ public class APSPanel extends javax.swing.JFrame {
 
         //Create a new transaction, either a preview or vend command a new transaction 
         //must be created.
-        Optional optional = backgroundWorker(NEW_TRANSACTION_ACTION_COMMAND, data);
+        Optional newTransactionOpt = backgroundWorker(NEW_TRANSACTION_ACTION_COMMAND, data);
 
-        optional.ifPresent((t) -> {
+        newTransactionOpt.ifPresent((t) -> {
 
             NewTransaction newTransaction = (NewTransaction) t;
 
             if (evt.getActionCommand().equals(PAY_TRANSACTION_ACTION_COMMAND)) {
 
                 //Do the vend
-                Optional vendedTrans = backgroundWorker(PAY_TRANSACTION_ACTION_COMMAND, newTransaction);
+                Optional paidTransactionOpt = backgroundWorker(PAY_TRANSACTION_ACTION_COMMAND, newTransaction);
 
-                vendedTrans.ifPresent((v) -> {
+                paidTransactionOpt.ifPresent((v) -> {
                     PaidTransaction paidTransaction = (PaidTransaction) v;
 
                     Receipt receipt = new Receipt(paidTransaction);
-                    receipt.sendPaidTransactionToScreen();
+                    jTextArea1.setText(receipt.sendPaidTransactionToScreen());
                 });
 
             } else {
@@ -1722,18 +1742,18 @@ public class APSPanel extends javax.swing.JFrame {
     private void jMenuItemPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPasteActionPerformed
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable transferable = clipboard.getContents(null);
-        
+
         try {
             Object object = transferable.getTransferData(DataFlavor.stringFlavor);
-            
+
             Component component = jPopupMenuPaste.getInvoker();
-            java.awt.Container container = (java.awt.Container)component;
-            javax.swing.JComponent jComponent = (javax.swing.JComponent)container;
-            javax.swing.text.JTextComponent jTextComponent = (javax.swing.text.JTextComponent)jComponent;
-            javax.swing.JTextField jTextField = (javax.swing.JTextField)jTextComponent;
-            
+            java.awt.Container container = (java.awt.Container) component;
+            javax.swing.JComponent jComponent = (javax.swing.JComponent) container;
+            javax.swing.text.JTextComponent jTextComponent = (javax.swing.text.JTextComponent) jComponent;
+            javax.swing.JTextField jTextField = (javax.swing.JTextField) jTextComponent;
+
             jTextField.setText(object.toString());
-            
+
         } catch (UnsupportedFlavorException | IOException ex) {
             Logger.getLogger(APSPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1784,7 +1804,7 @@ public class APSPanel extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (newTransactionOpt) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */

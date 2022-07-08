@@ -111,26 +111,24 @@ public final class VendControl {
     /**
      *
      * @return the com.mlvmn.apsvendingissueassistant.vending.BalanceSummary
-     * @throws IOException
-     * @throws InterruptedException
      * @throws com.mlvmn.apsvendingissueassistant.errors.AccessPowerException
      */
-    public BalanceSummary getBalance() throws IOException, InterruptedException, AccessPowerException {
+    public BalanceSummary getBalance() throws AccessPowerException {
 
         JsonObject rawBal = doWorkCheckLogin(anApi.balance(authToken));
-        
+
         if (isError(rawBal)) {
             throw new AccessPowerException(getErrorMessage(rawBal));
         }
-        
+
         Gson gson = new GsonBuilder().serializeNulls().create();
 
         return gson.fromJson(rawBal, BalanceSummary.class);
     }
 
-    public Meter validateMeterNumber(String meterNum) throws InterruptedException, IOException, AccessPowerException {
+    public Meter validateMeterNumber(String meterNum) throws AccessPowerException {
         JsonObject meterDetails = doWorkCheckLogin(anApi.validateMeterNumber(authToken, meterNum));
-        
+
         if (isError(meterDetails)) {
             throw new AccessPowerException(getErrorMessage(meterDetails));
         }
@@ -141,36 +139,33 @@ public final class VendControl {
     }
 
     /**
-     * 
+     *
      * @param meterNum the value of meterNum
      * @param amount the value of amount
      * @param phoneNum the value of phoneNum
      * @param deductServiceCharge the value of deductServiceCharge
-     * @throws InterruptedException
-     * @throws IOException
      * @throws AccessPowerException
      */
-    public NewTransaction newTransaction(String meterNum, double amount, String phoneNum, boolean deductServiceCharge) throws InterruptedException, IOException, AccessPowerException {
+    public NewTransaction newTransaction(String meterNum, double amount, String phoneNum, boolean deductServiceCharge) throws AccessPowerException {
         double vendAmount;
-        
+
         if (deductServiceCharge) {
             vendAmount = amount - Double.parseDouble(Settings.getSettings().retrieveServiceCharge());
         } else {
             vendAmount = amount;
         }
-        
-        
+
         JsonObject transaction = doWorkCheckLogin(anApi.newTransaction(authToken, meterNum, vendAmount, phoneNum));
 
         //Sometimes a meter number needs to be polled from AEDC's servers before 
         //transaction can take place and a simple validation of the meter number 
         //is all that's required
         if (isError(transaction)) {
-            
+
             if (getErrorMessage(transaction).equals("There was an error loading your customer info. Please try again")) {
                 Meter meter = validateMeterNumber(meterNum);
                 newTransaction(meter.getMeterNo(), amount, phoneNum, deductServiceCharge);
-            } else{
+            } else {
                 //If any other error occurred inform the user
                 throw new AccessPowerException(getErrorMessage(transaction));
             }
@@ -178,7 +173,7 @@ public final class VendControl {
 
         Gson gson = new GsonBuilder().serializeNulls().create();
         NewTransaction newTransaction = gson.fromJson(transaction, NewTransaction.class);
-        
+
         if (deductServiceCharge) {
             newTransaction.setServiceCharge(Double.parseDouble(Settings.getSettings().retrieveServiceCharge()));
         }
@@ -186,9 +181,9 @@ public final class VendControl {
         return newTransaction;
     }
 
-    public PaidTransaction vendTransaction(String transRef) throws InterruptedException, IOException, AccessPowerException {
+    public PaidTransaction vendTransaction(String transRef) throws AccessPowerException {
         JsonObject vend = doWorkCheckLogin(anApi.vendTransaction(authToken, transRef));
-        
+
         if (isError(vend)) {
             throw new AccessPowerException(getErrorMessage(vend));
         }
@@ -196,19 +191,19 @@ public final class VendControl {
         Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.fromJson(vend, PaidTransaction.class);
     }
-    
-    public PaidTransaction vendTransaction(NewTransaction newTransaction) throws InterruptedException, IOException, AccessPowerException {
+
+    public PaidTransaction vendTransaction(NewTransaction newTransaction) throws AccessPowerException {
         JsonObject vend = doWorkCheckLogin(anApi.vendTransaction(authToken, newTransaction.getTransactionReference()));
-        
+
         if (isError(vend)) {
             throw new AccessPowerException(getErrorMessage(vend));
         }
 
         Gson gson = new GsonBuilder().serializeNulls().create();
         PaidTransaction paidTransaction = gson.fromJson(vend, PaidTransaction.class);
-        
+
         paidTransaction.setServiceCharge(newTransaction.getServiceCharge());
-        
+
         return paidTransaction;
     }
 
@@ -216,30 +211,41 @@ public final class VendControl {
     //request call is authorised. If a response to a request is expired or 
     //missing an authorization token it calls the login method to obtain a new 
     //token for subsequent requests till the token expires.
-    private JsonObject doWorkCheckLogin(HttpRequest request) throws InterruptedException, IOException, AccessPowerException {
+    private JsonObject doWorkCheckLogin(HttpRequest request) throws AccessPowerException {
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response;
+        JsonObject json;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() != 200) {
-            throw new AccessPowerException("Something went wrong with our server."
-                    + "\nPlease check it or try again later.");
-        }
-
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        JsonObject json = gson.fromJson(response.body(), JsonObject.class);
-
-        //if response message is an error message
-        if (isError(json)) {
-
-            //Check if it has to do with authorization
-            if ("invalid session token. please login first".equals(getErrorMessage(json))
-                    || "session token header not found".equals(getErrorMessage(json))
-                    || "session token has expired. please login".equals(getErrorMessage(json))) {
-
-                login();
-                anApi.rebuidRequestWithNewAuthToken(request, authToken);
-                doWorkCheckLogin(request);
+            if (response.statusCode() != 200) {
+                throw new AccessPowerException("Something went wrong with our server."
+                        + "\nPlease check it or try again later.");
             }
+
+            Gson gson = new GsonBuilder().serializeNulls().create();
+
+            json = gson.fromJson(response.body(), JsonObject.class);
+
+            //if response message is an error message
+            if (isError(json)) {
+
+                //Check if it has to do with authorization
+                if ("invalid session token. please login first".equals(getErrorMessage(json))
+                        || "session token header not found".equals(getErrorMessage(json))
+                        || "session token has expired. please login".equals(getErrorMessage(json))) {
+
+                    login();
+                    HttpRequest newRequest = anApi.rebuidRequestWithNewAuthToken(request, authToken);
+                    json = doWorkCheckLogin(newRequest);
+                } else{
+                    throw new AccessPowerException(getErrorMessage(json));
+                }
+            }
+        } catch (IOException ex) {
+            throw new AccessPowerException(AccessPowerException.NETOWRK_ERROR_MESSAGE, ex);
+        } catch (InterruptedException ex) {
+            throw new AccessPowerException(AccessPowerException.NETWORK_ERROR_INTERRUPTION_MESSAGE, ex);
         }
 
         return json;

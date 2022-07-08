@@ -1206,6 +1206,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Validate"/>
             <Property name="toolTipText" type="java.lang.String" value="Validate Meter Number"/>
+            <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="VALIDATE_METER_ACTION_COMMAND" type="code"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonValidateActionPerformed"/>
