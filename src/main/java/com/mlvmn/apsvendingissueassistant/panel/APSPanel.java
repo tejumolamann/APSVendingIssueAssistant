@@ -1,6 +1,20 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To change this tem    @Override
+    public void insertUpdate(DocumentEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+plate file, choose Tools | Templates
  * and open the template in the editor.
  */
 package com.mlvmn.apsvendingissueassistant.panel;
@@ -31,7 +45,10 @@ import java.util.logging.Logger;
 import javax.swing.ButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+import javax.swing.text.JTextComponent;
 
 /**
  *
@@ -158,6 +175,8 @@ public class APSPanel extends javax.swing.JFrame {
         jButtonPrint = new javax.swing.JButton();
         jComboBoxPrinterNames = new javax.swing.JComboBox<>();
         jPopupMenuPaste = new javax.swing.JPopupMenu();
+        jMenuItemCopy = new javax.swing.JMenuItem();
+        jMenuItemCut = new javax.swing.JMenuItem();
         jMenuItemPaste = new javax.swing.JMenuItem();
         jPanelControls = new javax.swing.JPanel();
         jButtonValidate = new javax.swing.JButton();
@@ -188,7 +207,7 @@ public class APSPanel extends javax.swing.JFrame {
 
         jLabelValidateMeterNum.setText("Enter a meter number");
 
-        jTextFieldValidateMeterNum.setToolTipText("Type in a meter number to validate it");
+        jTextFieldValidateMeterNum.setActionCommand(VALIDATE_METER_ACTION_COMMAND);
         jTextFieldValidateMeterNum.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 jTextFieldValidateMeterNumMousePressed(evt);
@@ -200,11 +219,6 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldValidateMeterNum.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextFieldValidateMeterNumActionPerformed(evt);
-            }
-        });
-        jTextFieldValidateMeterNum.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextFieldValidateMeterNumKeyTyped(evt);
             }
         });
 
@@ -549,11 +563,6 @@ public class APSPanel extends javax.swing.JFrame {
                 jTextFieldPreviewMeterNumMouseReleased(evt);
             }
         });
-        jTextFieldPreviewMeterNum.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextFieldPreviewMeterNumKeyTyped(evt);
-            }
-        });
 
         jButtonClearPreview.setText("Clear");
         jButtonClearPreview.setToolTipText("Clear field");
@@ -590,11 +599,6 @@ public class APSPanel extends javax.swing.JFrame {
                 jTextFieldPreviewAmountMouseReleased(evt);
             }
         });
-        jTextFieldPreviewAmount.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextFieldPreviewAmountKeyTyped(evt);
-            }
-        });
 
         jLabelPreviewPhoneNum.setText("Enter phone number");
 
@@ -605,11 +609,6 @@ public class APSPanel extends javax.swing.JFrame {
             }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 jTextFieldPreviewPhoneNumMouseReleased(evt);
-            }
-        });
-        jTextFieldPreviewPhoneNum.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextFieldPreviewPhoneNumKeyTyped(evt);
             }
         });
 
@@ -925,6 +924,22 @@ public class APSPanel extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jMenuItemCopy.setText("Copy");
+        jMenuItemCopy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCopyActionPerformed(evt);
+            }
+        });
+        jPopupMenuPaste.add(jMenuItemCopy);
+
+        jMenuItemCut.setText("Cut");
+        jMenuItemCut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCutActionPerformed(evt);
+            }
+        });
+        jPopupMenuPaste.add(jMenuItemCut);
+
         jMenuItemPaste.setText("Paste");
         jMenuItemPaste.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1035,6 +1050,14 @@ public class APSPanel extends javax.swing.JFrame {
         jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
+        jTextArea1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTextArea1MousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jTextArea1MouseReleased(evt);
+            }
+        });
         jScrollPaneDisplayValues.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout jPanelDisplayLayout = new javax.swing.GroupLayout(jPanelDisplay);
@@ -1173,19 +1196,6 @@ public class APSPanel extends javax.swing.JFrame {
         jDialogValidateMeterNum.setTitle("Validtate Meter Number");
         jDialogValidateMeterNum.setVisible(true);
     }//GEN-LAST:event_jButtonValidateActionPerformed
-
-    private void jTextFieldValidateMeterNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldValidateMeterNumKeyTyped
-        //This enables the button to validate a meter number when its text field 
-        //is not empty
-
-//        if (evt.getComponent().equals(jTextFieldValidateMeterNum)) {
-//            if (!jTextFieldValidateMeterNum.getText().isEmpty()) {
-//                jButtonValidateMeterNum.setEnabled(true);
-//            } else {
-//                jButtonValidateMeterNum.setEnabled(false);
-//            }
-//        }
-    }//GEN-LAST:event_jTextFieldValidateMeterNumKeyTyped
 
     private void jButtonClearMeterNumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonClearMeterNumActionPerformed
         //This resets the validate meter number dialog window
@@ -1432,7 +1442,7 @@ public class APSPanel extends javax.swing.JFrame {
                             String[] data = (String[]) payLoad;
 
                             NewTransaction transaction = vc.newTransaction(
-                                    data[0], 
+                                    data[0],
                                     Double.parseDouble(data[1]), data[2],
                                     jCheckBoxServiceCharge.isSelected()
                             );
@@ -1492,8 +1502,6 @@ public class APSPanel extends javax.swing.JFrame {
                 if (worker.getState().equals(SwingWorker.StateValue.DONE)) {
                     return worker.get();
                 }
-
-                
 
             } catch (InterruptedException | ExecutionException | CancellationException ex) {
 
@@ -1628,12 +1636,6 @@ public class APSPanel extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_jButtonGenerateActionPerformed
 
-    private void jTextFieldPreviewMeterNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewMeterNumKeyTyped
-//        enableGenerateButton();
-//
-//        numbersOnlyTextField(evt);
-    }//GEN-LAST:event_jTextFieldPreviewMeterNumKeyTyped
-
     private void enableGenerateButton() {
         String meterNumber = jTextFieldPreviewMeterNum.getText();
         String amount = jTextFieldPreviewAmount.getText();
@@ -1645,33 +1647,6 @@ public class APSPanel extends javax.swing.JFrame {
             jButtonGenerate.setEnabled(true);
         }
     }
-
-    private void jTextFieldPreviewAmountKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewAmountKeyTyped
-//        amountOnlyTextField(evt);
-//
-//        enableGenerateButton();
-    }//GEN-LAST:event_jTextFieldPreviewAmountKeyTyped
-
-    /**
-     * This is a method that forces only valid amount to be typed in.
-     */
-    private void amountOnlyTextField(KeyEvent evt) {
-//        javax.swing.JTextField jtf = (javax.swing.JTextField) evt.getComponent();
-//        char keyChar = evt.getKeyChar();
-//        if (keyChar >= '0' && keyChar <= '9'
-//                || keyChar == KeyEvent.VK_BACK_SPACE || keyChar == KeyEvent.VK_DELETE
-//                || keyChar == KeyEvent.VK_PERIOD) {
-//            jtf.setEditable(true);
-//        } else {
-//            jtf.setEditable(false);
-//        }
-    }
-
-    private void jTextFieldPreviewPhoneNumKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPreviewPhoneNumKeyTyped
-        numbersOnlyTextField(evt);
-
-        enableGenerateButton();
-    }//GEN-LAST:event_jTextFieldPreviewPhoneNumKeyTyped
 
     private void jButtonCopyTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCopyTokenActionPerformed
         String receiptText = jTextArea1.getText();
@@ -1740,23 +1715,9 @@ public class APSPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldValidateMeterNumMouseReleased
 
     private void jMenuItemPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemPasteActionPerformed
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        Transferable transferable = clipboard.getContents(null);
-
-        try {
-            Object object = transferable.getTransferData(DataFlavor.stringFlavor);
-
-            Component component = jPopupMenuPaste.getInvoker();
-            java.awt.Container container = (java.awt.Container) component;
-            javax.swing.JComponent jComponent = (javax.swing.JComponent) container;
-            javax.swing.text.JTextComponent jTextComponent = (javax.swing.text.JTextComponent) jComponent;
-            javax.swing.JTextField jTextField = (javax.swing.JTextField) jTextComponent;
-
-            jTextField.setText(object.toString());
-
-        } catch (UnsupportedFlavorException | IOException ex) {
-            Logger.getLogger(APSPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        javax.swing.text.JTextComponent jTextComponent = getInvokedTextComponent();
+        
+        jTextComponent.paste();
     }//GEN-LAST:event_jMenuItemPasteActionPerformed
 
     private void jTextFieldPreviewMeterNumMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldPreviewMeterNumMousePressed
@@ -1782,6 +1743,37 @@ public class APSPanel extends javax.swing.JFrame {
     private void jTextFieldPreviewPhoneNumMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldPreviewPhoneNumMouseReleased
         jTextFieldValidateMeterNumMouseReleased(evt);
     }//GEN-LAST:event_jTextFieldPreviewPhoneNumMouseReleased
+
+    private void jMenuItemCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCopyActionPerformed
+        Object sourceComponent = evt.getSource();
+
+        javax.swing.text.JTextComponent jTextComponent = getInvokedTextComponent();
+
+        jTextComponent.copy();
+    }//GEN-LAST:event_jMenuItemCopyActionPerformed
+
+    private void jMenuItemCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCutActionPerformed
+        javax.swing.text.JTextComponent jTextComponent = getInvokedTextComponent();
+        
+        jTextComponent.cut();
+    }//GEN-LAST:event_jMenuItemCutActionPerformed
+
+    private void jTextArea1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextArea1MousePressed
+        jTextFieldValidateMeterNumMousePressed(evt);
+    }//GEN-LAST:event_jTextArea1MousePressed
+
+    private void jTextArea1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextArea1MouseReleased
+        jTextFieldValidateMeterNumMouseReleased(evt);
+    }//GEN-LAST:event_jTextArea1MouseReleased
+
+    private JTextComponent getInvokedTextComponent() {
+        Component component = jPopupMenuPaste.getInvoker();
+        java.awt.Container container = (java.awt.Container) component;
+        javax.swing.JComponent jComponent = (javax.swing.JComponent) container;
+        javax.swing.text.JTextComponent jTextComponent = (javax.swing.text.JTextComponent) jComponent;
+        
+        return jTextComponent;
+    }
 
     /**
      * This method ensures only numbers are typed into a text field. It takes a
@@ -1884,6 +1876,8 @@ public class APSPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelValidateMeterNum;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu jMenuFile;
+    private javax.swing.JMenuItem jMenuItemCopy;
+    private javax.swing.JMenuItem jMenuItemCut;
     private javax.swing.JMenuItem jMenuItemDemoLive;
     private javax.swing.JMenuItem jMenuItemPaste;
     private javax.swing.JMenuItem jMenuItemServiceCharge;

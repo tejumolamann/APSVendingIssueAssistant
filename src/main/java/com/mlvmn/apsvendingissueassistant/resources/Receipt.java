@@ -25,11 +25,8 @@ public class Receipt {
     
     /*Labels*/
     private static final String METER__NUMBER = "Meter Number: ";
-    private static final String DEBT_DEDUCTION = "Debt deduction: ₦";
     private static final String TRANSACTION__REFERENCE_ = "Transaction Reference: ";
     private static final String PHONE__NUMBER_ = "Phone Number: ";
-    private static final String DEDUCTION_ = "Deduction: %";
-    private static final String CURRENT_OUTSTANDING_BALANCE = "Current outstanding balance: ₦";
     private static final String TAX = "Tax: ₦";
     private static final String VALUE_OF_UNITS = "Value of units: ₦";
     private static final String UNITS_ONBTAINABLE_ = "Units onbtainable: ";
@@ -189,11 +186,9 @@ public class Receipt {
                 .append(aNewTransaction.getUnitsTax())
                 .append(SCREEN_NEW_LINE);
         
-        sb.append(DEBT_DEDUCTION)
-                .append(aNewTransaction.getOutstandingCharges())
-                .append(SCREEN_NEW_LINE);        
-        
         if(Objects.nonNull(aNewTransaction.getOutstandingCharges())){
+            
+            sb.append(DEBT_SERVICING_DETAILS).append(SCREEN_NEW_LINE);
             
             OutstandingCharges[] outstandingChargesArray = aNewTransaction.getOutstandingCharges();
             
@@ -256,6 +251,10 @@ public class Receipt {
                 .append(this.paidTransaction.getTransactionReference())
                 .append(SCREEN_NEW_LINE);
         
+        sb.append("Receipt No: ")
+                .append(this.paidTransaction.getReceiptNo())
+                .append(SCREEN_NEW_LINE);
+        
         sb.append(TYPE_OF__METER)
                 .append(meterInfo.getMeterType())
                 .append(SCREEN_NEW_LINE);
@@ -267,8 +266,7 @@ public class Receipt {
         //service charge
         sb.append(SERVICE_CHARGE)
                 .append(this.paidTransaction.getServiceCharge())
-                .append(SCREEN_NEW_LINE);
-        
+                .append(SCREEN_NEW_LINE);        
         
         sb.append(UNITS_ONBTAINABLE_)
                 .append(this.paidTransaction.getUnits())
@@ -280,13 +278,11 @@ public class Receipt {
         
         sb.append(TAX)
                 .append(this.paidTransaction.getUnitsTax())
-                .append(SCREEN_NEW_LINE);
-        
-        sb.append(DEBT_DEDUCTION)
-                .append(this.paidTransaction.getOutstandingCharges())
-                .append(SCREEN_NEW_LINE);        
+                .append(SCREEN_NEW_LINE);      
         
         if(Objects.nonNull(this.paidTransaction.getOutstandingCharges())){
+            
+            sb.append(DEBT_SERVICING_DETAILS).append(SCREEN_NEW_LINE);
             
             OutstandingCharges[] outstandingChargesArray = this.paidTransaction.getOutstandingCharges();
             
@@ -328,6 +324,7 @@ public class Receipt {
         
         return sb.toString();
     }
+    private static final String DEBT_SERVICING_DETAILS = "DEBT SERVICING DETAILS";
     
     public void sendToPrinter(String printerName) throws IOException{
         String payLoad = new String();
