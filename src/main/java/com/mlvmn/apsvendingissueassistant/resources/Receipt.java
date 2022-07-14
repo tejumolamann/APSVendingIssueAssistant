@@ -37,6 +37,7 @@ public class Receipt {
     private static final String SERVICE_CHARGE = "Service charge: ₦";
     private static final String OUTSTANDING_BALANCE = "Outstanding balance: ₦";
     private static final String OUTSTANDING_DESCRIPTION = "Outstanding description: ";
+    private static final String DEBT_SERVICING_DETAILS = "DEBT SERVICING DETAILS";
     
     
     private NewTransaction newTransaction;
@@ -323,23 +324,79 @@ public class Receipt {
         }
         
         return sb.toString();
-    }
-    private static final String DEBT_SERVICING_DETAILS = "DEBT SERVICING DETAILS";
+    }    
     
-    public void sendToPrinter(String printerName) throws IOException{
+    public void sendPaidTransactionToPrinter(String printerName) throws IOException{
         String payLoad = new String();
         
-//        //For prepaid meter vends
-//        if(this.jsonResponse.getString(METER_NO).length() >= 11){
-//            
-//        }
-//        
-//        //For postpaid meter vends
-//        if(this.jsonResponse.getString(METER_NO).length() < 11 && this.jsonResponse.getString(TOKEN) == null){
-//            
-//        }
+        PaidTransaction aPaidTransaction = this.paidTransaction;
         
-        PrintingService.printToThermalPrinter(printerName, payLoad);
+        String astrikLine = "******************************";
+        
+        String paymentDate = aPaidTransaction.getPaymentDate().concat(" ").concat(aPaidTransaction.getPaymentTime());
+        String receiptNo = String.valueOf(aPaidTransaction.getReceiptNo());
+        String name = aPaidTransaction.getCustomerMeterInfo().getCustomerName().trim();
+        String meterNo = aPaidTransaction.getCustomerMeterInfo().getMeterNo();
+        String accountNo = aPaidTransaction.getCustomerMeterInfo().getCustomerNo();
+        String paymentMode;
+        String total = String.valueOf(aPaidTransaction.getTotalAmount());
+        String totalWords;
+        String paidArrears;
+        String valueOfUnits = String.valueOf(aPaidTransaction.getUnitsGross());
+        String meterType = aPaidTransaction.getCustomerMeterInfo().getMeterType();
+        String tarrif = String.valueOf(aPaidTransaction.getUnitsNet());
+        String amountOfUnits = String.valueOf(aPaidTransaction.getUnits());
+        String tax = String.valueOf(aPaidTransaction.getUnitsTax());
+        String balance;
+        
+        if(Objects.nonNull(aPaidTransaction.getOutstandingCharges())){
+            paidArrears = String.valueOf(aPaidTransaction.getOutstandingCharges()[0].getAmountPaying());
+            balance = String.valueOf(aPaidTransaction.getOutstandingCharges()[0].getCurrentOutstandingBalance());
+        } else {
+            balance = paidArrears = "0.00";
+        }
+        
+        //For prepaid meter vends
+        if(aPaidTransaction.getCustomerMeterInfo().getMeterNo().length() >= 11){
+            paymentMode = "PREPAID";            
+            
+            payLoad = "AEDC"
+                    + "ABUJA ELECTRICITY DISTRIBUTION COMPANY"
+                    + "www.abaujaelectricity.com"
+                    + "TEL: 08152151515 / 08152141414"
+                    + astrikLine
+                    + "PAYMENT RECEIPT ORIGINAL"
+                    + "PAYMENT DATE: " + paymentDate
+                    + "RECEIPT NO: " + receiptNo
+                    + "NAME: " + name
+                    + "Meter No:" + meterNo
+                    + "Account No: " + accountNo
+                    + "Payment Mode: " + paymentMode
+                    + "Vendor: PAYKIOSK"
+                    + "Helplines: 0811 115 2201 / 0909 960 3670"
+                    + "Total: " + total
+                    + "Total in words: "
+                    + astrikLine
+                    + "TOKENS"
+                    + astrikLine
+                    + aPaidTransaction.getToken()
+                    + "Paid Arrears: " + paidArrears
+                    + "Value of units: " + valueOfUnits
+                    + "Meter type: " + meterType
+                    + "Tarrif: " + tarrif
+                    + "Amount of units: " + amountOfUnits
+                    + "Tax: " + tax
+                    + "Balance: " + balance
+                    + "THANK YOU"
+                    + astrikLine;
+        }
+        
+        //For postpaid meter vends
+        if(aPaidTransaction.getCustomerMeterInfo().getMeterNo().length() < 11 && aPaidTransaction.getToken() == null){
+            paymentMode = "POSTPAID";
+        }
+        
+        //PrintingService.printToThermalPrinter(printerName, payLoad);
     }
     
 }

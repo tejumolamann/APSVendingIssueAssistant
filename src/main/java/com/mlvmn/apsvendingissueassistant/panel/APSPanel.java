@@ -80,11 +80,6 @@ public class APSPanel extends javax.swing.JFrame {
     private static final String PAY_TRANSACTION_ACTION_COMMAND = "payTransaction";
 
     /**
-     * An array of the names of the printers installed on the local computer.
-     */
-    private static String[] printerNames;
-
-    /**
      * Variable to hold the receipt for a vend.
      */
     private static Receipt vendReceipt;
@@ -97,9 +92,6 @@ public class APSPanel extends javax.swing.JFrame {
         //Initialize objects for vend control and settings
         vc = VendControl.getInstance();
         vs = Settings.getSettings();
-
-        //Retrieve all the names of the printers installed on the local computer
-        printerNames = PrintingService.getAllInstalledPrinterNames();
 
         initComponents();
     }
@@ -872,7 +864,7 @@ public class APSPanel extends javax.swing.JFrame {
             }
         });
 
-        jComboBoxPrinterNames.setModel(new DefaultComboBoxModel(printerNames));
+        jComboBoxPrinterNames.setModel(new DefaultComboBoxModel(PrintingService.getAllInstalledPrinterNames()));
         jComboBoxPrinterNames.setToolTipText("List of printer names on this computer");
 
         javax.swing.GroupLayout jPanelPrintLayout = new javax.swing.GroupLayout(jPanelPrint);
@@ -1232,8 +1224,6 @@ public class APSPanel extends javax.swing.JFrame {
         jTextFieldPreviewAmount.setText("");
         jTextFieldPreviewPhoneNum.setText("");
 
-        jButtonGenerate.setEnabled(false);
-
         jTextFieldPreviewMeterNum.requestFocusInWindow();
     }//GEN-LAST:event_jButtonClearPreviewActionPerformed
 
@@ -1248,7 +1238,6 @@ public class APSPanel extends javax.swing.JFrame {
 
         jButtonGenerate.setText("Generate");
         jButtonGenerate.setActionCommand(NEW_TRANSACTION_ACTION_COMMAND);
-        jButtonGenerate.setEnabled(false);
 
         jTextFieldPreviewMeterNum.setText("");
         jTextFieldPreviewAmount.setText("");
@@ -1265,7 +1254,6 @@ public class APSPanel extends javax.swing.JFrame {
     private void jButtonVendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVendActionPerformed
         jButtonGenerate.setText("Vend");
         jButtonGenerate.setActionCommand(PAY_TRANSACTION_ACTION_COMMAND);
-        jButtonGenerate.setEnabled(false);
 
         jTextFieldPreviewMeterNum.setText("");
         jTextFieldPreviewAmount.setText("");
@@ -1586,8 +1574,8 @@ public class APSPanel extends javax.swing.JFrame {
             vendDetails.ifPresent((t) -> {
                 PaidTransaction paidTransaction = (PaidTransaction) t;
 
-                Receipt receipt = new Receipt(paidTransaction);
-                jTextArea1.setText(receipt.sendPaidTransactionToScreen());
+                vendReceipt = new Receipt(paidTransaction);
+                jTextArea1.setText(vendReceipt.sendPaidTransactionToScreen());
             });
         }
     }//GEN-LAST:event_jButtonValidateMeterNumActionPerformed
@@ -1624,29 +1612,17 @@ public class APSPanel extends javax.swing.JFrame {
                 paidTransactionOpt.ifPresent((v) -> {
                     PaidTransaction paidTransaction = (PaidTransaction) v;
 
-                    Receipt receipt = new Receipt(paidTransaction);
-                    jTextArea1.setText(receipt.sendPaidTransactionToScreen());
+                    vendReceipt = new Receipt(paidTransaction);
+                    jTextArea1.setText(vendReceipt.sendPaidTransactionToScreen());
                 });
 
             } else {
-                Receipt receipt = new Receipt(newTransaction);
-                jTextArea1.setText(receipt.sendNewTransactionToScreen());
+                vendReceipt = new Receipt(newTransaction);
+                jTextArea1.setText(vendReceipt.sendNewTransactionToScreen());
             }
 
         });
     }//GEN-LAST:event_jButtonGenerateActionPerformed
-
-    private void enableGenerateButton() {
-        String meterNumber = jTextFieldPreviewMeterNum.getText();
-        String amount = jTextFieldPreviewAmount.getText();
-        String phoneNumber = jTextFieldPreviewPhoneNum.getText();
-
-        if (!meterNumber.isBlank() && !meterNumber.isEmpty()
-                && !amount.isBlank() && !amount.isEmpty()
-                && !phoneNumber.isBlank() && !phoneNumber.isEmpty()) {
-            jButtonGenerate.setEnabled(true);
-        }
-    }
 
     private void jButtonCopyTokenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCopyTokenActionPerformed
         String receiptText = jTextArea1.getText();
@@ -1695,7 +1671,10 @@ public class APSPanel extends javax.swing.JFrame {
             String printerName = (String) jComboBoxPrinterNames.getSelectedItem();
 
             try {
-                vendReceipt.sendToPrinter(printerName);
+                vendReceipt.sendPaidTransactionToPrinter(printerName);
+                
+                jDialogPrint.setVisible(false);
+                JOptionPane.showMessageDialog(this, "Successfully sent to printer", printerName, JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this, ex.getLocalizedMessage(), "Printer Error", JOptionPane.ERROR_MESSAGE);
             }

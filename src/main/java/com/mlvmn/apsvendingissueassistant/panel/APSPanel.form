@@ -1030,7 +1030,7 @@
             <Component class="javax.swing.JComboBox" name="jComboBoxPrinterNames">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="new DefaultComboBoxModel(printerNames)" type="code"/>
+                  <Connection code="new DefaultComboBoxModel(PrintingService.getAllInstalledPrinterNames())" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="List of printer names on this computer"/>
               </Properties>
