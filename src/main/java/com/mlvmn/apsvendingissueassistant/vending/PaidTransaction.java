@@ -24,7 +24,7 @@ public class PaidTransaction {
     private String transactionTime;
     private String paymentDate;
     private String paymentTime;
-    private long receiptNo;
+    private String receiptNo;
     private String disco;
     private String extraData;
     private double serviceCharge;
@@ -169,11 +169,11 @@ public class PaidTransaction {
         this.paymentTime = paymentTime;
     }
 
-    public long getReceiptNo() {
+    public String getReceiptNo() {
         return receiptNo;
     }
 
-    public void setReceiptNo(long receiptNo) {
+    public void setReceiptNo(String receiptNo) {
         this.receiptNo = receiptNo;
     }
 

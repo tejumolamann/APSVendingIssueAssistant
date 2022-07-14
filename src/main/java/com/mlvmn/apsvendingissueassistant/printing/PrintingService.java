@@ -5,6 +5,7 @@
 package com.mlvmn.apsvendingissueassistant.printing;
 
 import com.github.anastaciocintra.escpos.EscPos;
+import com.github.anastaciocintra.escpos.Style;
 import com.github.anastaciocintra.output.PrinterOutputStream;
 import java.io.IOException;
 import javax.print.PrintService;
@@ -46,14 +47,41 @@ public class PrintingService {
         return printerNames;
     }
     
-    public static void printToThermalPrinter(String printerName, String payLoad) throws IOException
-    {
+    private final EscPos escPos;
+
+    public PrintingService(String printerName) throws IOException {
         PrintService thermalPrinterService = PrinterOutputStream.getPrintServiceByName(printerName);
         
         PrinterOutputStream printerOutputStream = new PrinterOutputStream(thermalPrinterService);
         
-        EscPos escPos = new EscPos(printerOutputStream);
-        escPos.write(payLoad);
-        escPos.close();
+        this.escPos = new EscPos(printerOutputStream);
+    }
+    
+    public void closePrintConnection() throws IOException{
+        this.escPos.close();
+    }
+    
+    public void sendToThermalPrinterOnNewLine(Style style, String printData) throws IOException{
+        this.escPos.writeLF(style, printData);
+    }
+    
+    public void sendToThermalPrinterOnNewLine(String printData) throws IOException{
+        this.escPos.writeLF(printData);
+    }
+    
+    public void sendToThermalPrinterOnSameLine(String printData) throws IOException{
+        this.escPos.write(printData);
+    }
+    
+    public void sendToThermalPrinterOnSameLine(Style style, String printData) throws IOException{
+        this.escPos.write(printData);
+    }
+    
+    public void setPrintStyle(Style style){
+        this.escPos.setStyle(style);
+    }
+    
+    public void sendWhiteLinesToPrinter(int lines) throws IOException{
+        this.escPos.feed(lines);
     }
 }
